@@ -13,6 +13,7 @@ public interface MoteurJeuService {
 	public int getHerosX();
 	
 	/* Invariants */
+
 	// inv : 0 <= getPasJeuCourant(M) <= getMaxPasJeu(M)
 	// inv : 1 <= getHerosX(M) <= getTerrain.getNombreColonnes
 	// inv : 1 <= getHerosY(M) <= getTerrain.getNombreColonnes
