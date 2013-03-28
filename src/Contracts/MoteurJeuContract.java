@@ -2,6 +2,9 @@ package Contracts;
 
 
 import Decorator.MoteurJeuDecorator;
+import Error.InvariantError;
+import Error.PostConditionError;
+import Error.PreConditionError;
 
 public class MoteurJeuContract extends MoteurJeuDecorator {
 	
@@ -88,7 +91,7 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (getTerrain().getNombreLignes() != 13){
 			throw new PostConditionError("Le nombre de lignes du terrain apres l'init n'est pas égal à 13");
 		}
-		if (getBombeNumeros() != NULL){
+		if (getBombeNumeros() != null){
 			throw new PostConditionError("Liste de Bombes non après l'init");
 		}
 

@@ -7,6 +7,11 @@ package Services;
  * @author Matthieu Dien
  *
  */
+
+enum BlocType {
+	VIDE,MURBRIQUE,MURMETAL
+}
+
 public interface BlocService {
 	
 	/**

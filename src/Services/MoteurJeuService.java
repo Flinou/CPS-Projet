@@ -54,7 +54,7 @@ public interface MoteurJeuService {
 	//post :getHerosForceVitale(pasJeu(M,c))=getHerosForceVitale(M)
 	//post :getTerrain(pasJeu(M,c))=getTerrain(M)
 	//post :
-	public void pasJeu(Commande ) 
+	public void pasJeu(); 
 	
 	
 	
