@@ -34,7 +34,7 @@ public interface TerrainService {
 	 * @return la largeur du terrain
 	 * @inv getlargeur(T)>0
 	 */
-	public int getLargeur();
+	public int getNombreColonnes();
 	
 	
 	/**
@@ -43,7 +43,7 @@ public interface TerrainService {
 	 * @return la hauteur du terrain
 	 * @inv getHauteur(T)>0
 	 */
-	public int getHauteur();
+	public int getNombreLignes();
 	
 	
 	/**

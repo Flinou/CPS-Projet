@@ -1,22 +1,145 @@
 package Services;
 
+/**
+ * 
+ * Services fournis par le moteur du jeu
+ * 
+ * @author Antoine FLINOIS
+ *
+ */ 
+
 public interface MoteurJeuService {
 	
 	
 	/* Observators */
 	
-		
+	/**
+	 * Retourne le numero du pas de jeu courant.
+	 */
 	public int getPasJeuCourant();
-	
+	/**
+	 * Retourne le nombre maximum de pas de jeu atteignable.
+	 */
 	public int getMaxPasJeu();
 	
+	/**
+	 * Retourne l'abscisse du heros.
+	 */
 	public int getHerosX();
+
+	/**
+	 * Retourne l'ordonnee du heros.
+	 */
+	
+	public int getHerosY();
+
+	/**
+	 * Retourne l'abscisse du kidnappeur.
+	 */
+	
+	public int getKidnappeurX();
+
+	/** 
+	 * Retoune le terrain de jeu
+	 * @return Terrain de jeu
+	 */
+	
+	public TerrainService getTerrain();
+	
+	/**
+	 * Retourne l'ordonnee du kidnappeur.
+	 */
+	
+	public int getKidnappeurY();
+	
+	/**
+	 * Retourne l'etat de sante du heros
+	 * @return Sante Heros
+	 */
+	public Sante getHerosSante();
+	
+	/**
+	 * Retourne l'etat de sante du kidnappeur
+	 * @return Sante Kidnappeur
+	 */
+	
+	public Sante getKidnappeurSante();
+	
+	/**
+	 * Retourne la force vitale du heros
+	 * @return force vitale heros
+	 */
+	
+	public int getHerosForceVitale();
+	
+	/**
+	 * Retourne la force vitale du kidnappeur
+	 * @return force vitale kidnappeur
+	 */
+	
+	public int getKidnappeurForceVitale();
+	
+	/**
+	 * Verifie si une bombe existe
+	 * @param num
+	 *  		le numero de la bombe
+	 */
+	
+	public boolean bombeExiste(int num);
+	
+	/**
+	 * Retourne le nombre de bombes.
+	 */
+	
+	public int getNbBombes();
+	
+	/**
+	 * Renvoie la bombe au numero donne.
+	 * @param num
+	 * 			le numero de la bombe
+	 * @pre bombeExiste(num) == true
+	 */
+	
+	public BombeService getBombe(int num);
+	
+	/**
+	 * Renvoie le tableau contenant les numeros des bombes
+	 * @return tableau d'entiers
+	 */
+	
+	public int[] getBombeNumeros();
+	
+	/**
+	 * Verifie si la partie est finie.
+	 */
+	
+	public boolean estFini();
+	
+	/**
+	 * Renvoie le resultat de la partie
+	 * @pre estFini() == true
+	 */
+	public Resultat resultatFinal();
+	
+	/**
+	 * Verifie si le heros est a portee d'une bombe.
+	 * @param x
+	 * 			l'abscisse du heros
+	 * @param y
+	 * 			l'ordonnee du heros
+	 * @param num
+	 * 			le numero de la bombe
+	 * @pre bombeExiste(num) == true
+	 */
+	public boolean misEnJoue(int x,int y,int num);
 	
 	/* Invariants */
 
 	// inv : 0 <= getPasJeuCourant(M) <= getMaxPasJeu(M)
 	// inv : 1 <= getHerosX(M) <= getTerrain.getNombreColonnes
+	// inv : 1 <= getKidnappeurX(M) <= getTerrain.getNombreColonnes
 	// inv : 1 <= getHerosY(M) <= getTerrain.getNombreColonnes
+	// inv : 1 <= getKidnappeurY(M) <= getTerrain.getNombreLignes
 	// inv : 3 <= getHerosForceVitale(M) <= 11
 	// inv : getNbBombes(M) = abs(getBombeNumeros(M))
 	// inv : bombeExiste(M,num) = (num belongs to getBombeNumeros(M)
@@ -54,7 +177,7 @@ public interface MoteurJeuService {
 	//post :getHerosForceVitale(pasJeu(M,c))=getHerosForceVitale(M)
 	//post :getTerrain(pasJeu(M,c))=getTerrain(M)
 	//post :
-	public void pasJeu(); 
+	public void pasJeu(Commande com); 
 	
 	
 	
