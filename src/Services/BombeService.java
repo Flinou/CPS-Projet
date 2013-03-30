@@ -7,6 +7,7 @@ package Services;
  *
  */
 public interface BombeService {
+
 	
 	public int getNumero();
 	public int getX();

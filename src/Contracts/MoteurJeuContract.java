@@ -8,6 +8,7 @@ package Contracts;
  *
  */ 
 import Decorator.MoteurJeuDecorator;
+import Services.BombeService;
 import Services.Resultat;
 import Services.Sante;
 import Error.*;
@@ -33,16 +34,19 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (getPasJeuCourant() < 1 || getPasJeuCourant()>getMaxPasJeu()){
 			throw new InvariantError ("Le pas de jeu courant n'est pas compris entre 1 et le maximum possible.");
 		}
-
+		
+		if (getBombeNumeros().size() != getNbBombes()){
+			throw new InvariantError("La taille de la liste des bombes n'est pas egale au nombre de bombes");
+		}
 		//getNbBombes > A faire !
 		
 		if (bombeExiste(num)){
 			int cpt = -1;
 			for (int i=0;i<getNbBombes();i++){
-				if (num == getBombeNumeros()[i]){
+				if (num == getBombeNumeros().get(i)){
 					break;
 				} else if (cpt == getNbBombes()){
-					throw new InvariantError("Bombe existe mais num pas dans la liste");
+					throw new InvariantError("La Bombe existe mais num n'est pas dans la liste");
 				} 
 			}
 		}
@@ -66,6 +70,8 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 	
 	}
 	public void init(int maxPasJeu){
+		//inv
+		checkInvariant();
 		//pre : init(MaxPasJeu) require maxPasJeu >= 0
 		if (maxPasJeu < 0){
 			throw new PreConditionError("Le nombre max de Pas de Jeu est inferieur a zero");
@@ -99,7 +105,33 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (getBombeNumeros() != null){
 			throw new PostConditionError("Liste de Bombes non après l'init");
 		}
+		checkInvariant();
 
 	}
+	public BombeService getBombe(int num){
+		// pre : bombeExiste(num)
+		if (!bombeExiste(num)){
+			throw new PreConditionError("La bombe n'existe pas");
+		}
+		return super.getBombe(num);
+	}
+	
+	public Resultat resultatFinal(){
+		//pre : estFini()
+		if (!estFini()){
+			throw new PreConditionError("La partie n'est pas finie");
+		}
+		return super.resultatFinal();
+	}
+	
+	public boolean misEnJoue(int x,int y, int num){
+		//pre :bombeExiste(num)
+		if (!bombeExiste(num)){
+			throw new PreConditionError("La bombe n'existe pas");
+		}
+		return super.misEnJoue(x,y,num);
+	}
+	
+	
 
 }

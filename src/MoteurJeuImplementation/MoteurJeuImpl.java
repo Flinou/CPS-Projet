@@ -1,11 +1,17 @@
 package MoteurJeuImplementation;
 
+import java.util.ArrayList;
+
+import java.util.HashMap;
+
+
 import Services.BombeService;
 import Services.Commande;
 import Services.MoteurJeuService;
 import Services.Resultat;
 import Services.Sante;
 import Services.TerrainService;
+import Services.VilainService;
 
 /**
  * 
@@ -15,49 +21,83 @@ import Services.TerrainService;
  *
  */
 public class MoteurJeuImpl implements MoteurJeuService {
+	private int pasJeuCourant;
+	private int maxPasJeu;
+	private int xheros;
+	private int yheros;
+	private int xkidnappeur;
+	private int ykidnappeur;
+	private Sante santeHeros;
+	private Sante santeKidnappeur;
+	private TerrainService terrain;
+	private int herosforcevitale;
+	private int kidnappeurforcevitale;
+	private ArrayList<Integer> indexbombes;
+	private ArrayList<BombeService> bombes;
+	private HashMap vilainscoords;
+	private BombeService bombe;
+	private int nbBombesKidnappeur;
+	private int nbBombesHeros;
+	private VilainService vilain;
 
 	@Override
 	public int getPasJeuCourant() {
-		// TODO Auto-generated method stub
-		return 0;
+		return pasJeuCourant;
 	}
 
 	@Override
 	public int getMaxPasJeu() {
-
-		// TODO Auto-generated method stub
-		return 0;
+		return maxPasJeu;
 	}
 
 	@Override
 	public void init(int maxPasJeu) {
-		// TODO Auto-generated method stub
+		herosforcevitale = 3;
+		kidnappeurforcevitale = 3;
+		terrain.init(15, 13);
+		xheros = 1;
+		yheros = 1;
+		xkidnappeur = 1;
+		ykidnappeur = 1;
+		santeHeros = Sante.VIVANT;
+		santeKidnappeur = Sante.VIVANT;
+		nbBombesKidnappeur = 1;
+		nbBombesHeros = 1;
+		// Initialisation des coordonnees des vilains
+		for (int j=0;j<4;j++){
+			for (int i=2; i<terrain.getNombreColonnes() - 2; j++){
+				for (int y=2; y<terrain.getNombreLignes() - 2; y++){
+					if (terrain.getBloc(i,y).getType() == BlocType.VIDE){
+							int [] coord = {i,y};
+							vilainscoords.put(vilain, coord);
+							break;
+				}
+				break;	
+			}
+		}
 		
+	}
 	}
 
 
 	@Override
 	public int getHerosX() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+		return xheros;
+		}
 
 	@Override
 	public int getHerosY() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+		return yheros;
+		}
 
 	@Override
 	public int getKidnappeurX() {
-		// TODO Auto-generated method stub
-		return 0;
+		return xkidnappeur;
 	}
 
 	@Override
 	public int getKidnappeurY() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ykidnappeur;
 	}
 
 	@Override
@@ -68,67 +108,76 @@ public class MoteurJeuImpl implements MoteurJeuService {
 
 	@Override
 	public TerrainService getTerrain() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		return terrain;
+		}
 
 	@Override
 	public Sante getHerosSante() {
-		// TODO Auto-generated method stub
-		return null;
+		return santeHeros;
 	}
-
 	@Override
 	public Sante getKidnappeurSante() {
-		// TODO Auto-generated method stub
-		return null;
+		return santeKidnappeur;
 	}
 
 	@Override
 	public int getHerosForceVitale() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+		return herosforcevitale;
+		}
+	
 
 	@Override
 	public int getKidnappeurForceVitale() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+		return kidnappeurforcevitale;
+		}
+	
 
 	@Override
 	public boolean bombeExiste(int num) {
-		// TODO Auto-generated method stub
-		return false;
+		if (bombes.get(num) != null){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	@Override
 	public int getNbBombes() {
-		// TODO Auto-generated method stub
-		return 0;
+		return bombes.size();
 	}
 
 	@Override
 	public BombeService getBombe(int num) {
-		// TODO Auto-generated method stub
-		return null;
+		return bombes.get(num);
 	}
 
 	@Override
+	public ArrayList<BombeService> getBombes() {
+		return bombes;
+	}
+	
+	@Override
 	public boolean estFini() {
-		// TODO Auto-generated method stub
+		if (santeHeros == Sante.MORT || santeKidnappeur == Sante.MORT || pasJeuCourant == maxPasJeu){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public Resultat resultatFinal() {
-		// TODO Auto-generated method stub
-		return null;
+		if (santeHeros == Sante.MORT){
+			return Resultat.KIDNAPPEURGAGNE;
+		}else if (santeKidnappeur == Sante.MORT){
+			return Resultat.HEROSGAGNE;
+		}else{
+			return Resultat.PARTIENULLE;
+		}
 	}
 
 
 	@Override
-	public int[] getBombeNumeros() {
+	public ArrayList<Integer> getBombeNumeros() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -138,5 +187,6 @@ public class MoteurJeuImpl implements MoteurJeuService {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 
 }

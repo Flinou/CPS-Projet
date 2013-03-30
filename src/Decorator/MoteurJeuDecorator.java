@@ -1,5 +1,7 @@
 package Decorator;
 
+import java.util.ArrayList;
+
 import Services.BombeService;
 import Services.Commande;
 import Services.MoteurJeuService;
@@ -27,104 +29,92 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 
 	@Override
 	public int getHerosX() {
-		// TODO Auto-generated method stub
-		return 0;
+		return delegates.getHerosX();
 	}
 
 	@Override
 	public int getHerosY() {
-		// TODO Auto-generated method stub
-		return 0;
+		return delegates.getHerosY();
 	}
 
 	@Override
 	public int getKidnappeurX() {
-		// TODO Auto-generated method stub
-		return 0;
+		return delegates.getKidnappeurX();
 	}
 
 	@Override
 	public int getKidnappeurY() {
-		// TODO Auto-generated method stub
-		return 0;
+			return delegates.getKidnappeurY();
 	}
 
 	@Override
 	public void pasJeu(Commande com) {
-		// TODO Auto-generated method stub
-		
+		delegates.pasJeu(com);
 	}
 
 	@Override
 	public TerrainService getTerrain() {
-		// TODO Auto-generated method stub
-		return null;
+		return delegates.getTerrain();
 	}
 
 	@Override
 	public Sante getHerosSante() {
-		// TODO Auto-generated method stub
-		return null;
+		return delegates.getHerosSante();
 	}
 
 	@Override
 	public Sante getKidnappeurSante() {
-		// TODO Auto-generated method stub
-		return null;
+		return delegates.getKidnappeurSante();
 	}
 
 	@Override
 	public int getHerosForceVitale() {
-		// TODO Auto-generated method stub
-		return 0;
+		return delegates.getHerosForceVitale();
 	}
 
 	@Override
 	public int getKidnappeurForceVitale() {
-		// TODO Auto-generated method stub
-		return 0;
+		return delegates.getKidnappeurForceVitale();
 	}
 
 	@Override
 	public boolean bombeExiste(int num) {
-		// TODO Auto-generated method stub
-		return false;
+		return delegates.bombeExiste(num);
 	}
 
 	@Override
 	public int getNbBombes() {
-		// TODO Auto-generated method stub
-		return 0;
+		return delegates.getNbBombes();
 	}
 
 	@Override
 	public BombeService getBombe(int num) {
-		// TODO Auto-generated method stub
-		return null;
+		return delegates.getBombe(num);
 	}
 
 	@Override
-	public int[] getBombeNumeros() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Integer> getBombeNumeros() {
+		return delegates.getBombeNumeros();
 	}
 
 	@Override
 	public boolean estFini() {
-		// TODO Auto-generated method stub
-		return false;
+		return delegates.estFini();
 	}
 
 	@Override
 	public Resultat resultatFinal() {
-		// TODO Auto-generated method stub
-		return null;
+		return delegates.resultatFinal();
 	}
 
 	@Override
 	public boolean misEnJoue(int x, int y, int num) {
-		// TODO Auto-generated method stub
-		return false;
+		return delegates.misEnJoue(x, y, num);
+	}
+
+	@Override
+	public ArrayList<BombeService> getBombes() {
+		return delegates.getBombes();
 	}
 
 }

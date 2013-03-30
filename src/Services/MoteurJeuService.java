@@ -1,5 +1,7 @@
 package Services;
 
+import java.util.ArrayList;
+
 /**
  * 
  * Services fournis par le moteur du jeu
@@ -88,6 +90,12 @@ public interface MoteurJeuService {
 	public boolean bombeExiste(int num);
 	
 	/**
+	 * Retourne la liste des bombes
+	 */
+	
+	public ArrayList<BombeService> getBombes();
+	
+	/**
 	 * Retourne le nombre de bombes.
 	 */
 	
@@ -107,7 +115,7 @@ public interface MoteurJeuService {
 	 * @return tableau d'entiers
 	 */
 	
-	public int[] getBombeNumeros();
+	public ArrayList<Integer> getBombeNumeros();
 	
 	/**
 	 * Verifie si la partie est finie.
