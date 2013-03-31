@@ -4,20 +4,21 @@ package Services;
  * 
  * Services fournis par un bloc
  * 
+ * @types {@link BlocType BlocType}, {@link PowerUpType PowerUptype} 
+ * 
  * @author Matthieu Dien
+ * 
  *
  */
 
-enum BlocType {
-	VIDE,MURBRIQUE,MURMETAL
-}
+
 
 public interface BlocService {
 	
 	/**
 	 * Créé un nouveau bloc
 	 * @post getType(init()) == BlocType::VIDE
-	 * @post <br />getPowerUp(init()) == PowerUp::RIEN
+	 * @post <br />getPowerUpType(init()) == PowerUpType::RIEN
 	 */
 	public void init();
 	
@@ -25,6 +26,7 @@ public interface BlocService {
 	/**
 	 * Donne le type d'un bloc
 	 * @return type du bloc
+	 * @inv \( getType(B) \in BlocType::\{VIDE,MURBRIQUE,MURMETAL\}\)
 	 */
 	public BlocType getType();
 	
@@ -32,13 +34,14 @@ public interface BlocService {
 	/**
 	 * Donne le contenu d'un bloc
 	 * @return contenu du bloc
+	 * @inv \( getPowerUpType(B) \in PowerUpType::\{RIEN,BOMBUP,FIREUP,WALLPASS,BOMBPASS,FIRESUIT\}\)
 	 */
-	public PowerUp getPowerUp();
+	public PowerUpType getPowerUpType();
 	
 	
 	/**
 	 * Définit le type d'un bloc
- 	 * @post getType(setType(init(),t)) == t
+ 	 * @post getType(setType(B,t)) == t
 	 * @param b
 	 * 		le type de bloc
 	 */
@@ -46,9 +49,10 @@ public interface BlocService {
 	
 	/**
 	 * Définit le PowerUp contenu dans un bloc
+	 * @post getPowerUpType(setPowerUpType(B,p)) == p
 	 * @param p
 	 * 		le type de PowerUp
 	 */
-	public void setPowerUp(PowerUp p);
+	public void setPowerUpType(PowerUpType p);
 	
 }

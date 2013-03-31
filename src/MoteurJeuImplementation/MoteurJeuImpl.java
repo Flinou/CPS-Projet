@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
+import Services.BlocType;
 import Services.BombeService;
 import Services.Commande;
 import Services.MoteurJeuService;

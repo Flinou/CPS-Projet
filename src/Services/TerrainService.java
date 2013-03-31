@@ -4,6 +4,9 @@ package Services;
  * 
  * Services fournis par un Terrain
  * 
+ * @use {@link BlocService}
+ * @types {@link BlocType}, int
+ * 
  * @author Matthieu Dien
  *
  */
@@ -18,8 +21,8 @@ public interface TerrainService {
 	 * @pre \(l = h = 1 \ [2] \\
 	 * 		 l \gt 0\ \\ 
 	 * 		h \gt 0\)
-	 * @post \( getLargeur(init(l,h))=l \\
-	 * 		getHauteur(init(l,h))=h \\
+	 * @post \( getNombreColonnes(init(l,h))=l \\
+	 * 		getNombreLignes(init(l,h))=h \\
 	 * 		\forall i,j \ 0 \le i \le l \ et \ 0 \le j \le h, \ 
 	 * 		Bloc::getType(getBloc(init(l,h),i,h))=Bloc::MURMETAL, \\
 	 * 		Bloc::getType(getBloc(init(l,h),l,j))=Bloc::MURMETAL, \\
@@ -32,7 +35,7 @@ public interface TerrainService {
 	/**
 	 * Retourne la largeur du terrain
 	 * @return la largeur du terrain
-	 * @inv getlargeur(T)>0
+	 * @inv getNombreColonnes(T)>0
 	 */
 	public int getNombreColonnes();
 	
@@ -41,7 +44,7 @@ public interface TerrainService {
 	 * Retourne la hauteur du terrain
 	 * 
 	 * @return la hauteur du terrain
-	 * @inv getHauteur(T)>0
+	 * @inv getNombreLignes(T)>0
 	 */
 	public int getNombreLignes();
 	

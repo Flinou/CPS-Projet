@@ -1,5 +1,5 @@
 package Services;
 
-public enum PowerUp {
+public enum PowerUpType {
 	RIEN,BOMBUP,FIREUP,WALLPASS,BOMBPASS,FIRESUIT
 }
