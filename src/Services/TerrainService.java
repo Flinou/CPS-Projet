@@ -9,7 +9,13 @@ package Services;
  * 
  * @author Matthieu Dien
  *
- */
+ * @inv
+ *		\[\forall i,j \ 0 \le i \lt l \ et \ 0 \le j \lt h, \\
+ * 		Bloc::getType(getBloc(T,i,h))=Bloc::MURMETAL, \\
+ * 		Bloc::getType(getBloc(T,l,j))=Bloc::MURMETAL, \\
+ * 		si \ i=j=1 \ [2] \ alors \ Bloc::getType(getBloc(T,i,j))=Bloc::MURMETAL \\
+ * 		sinon \ Bloc::getType(getBloc(T,i,j)) \ne Bloc::MURMETAL \) 
+  */
 
 public interface TerrainService {
 	
@@ -22,12 +28,8 @@ public interface TerrainService {
 	 * 		 l \gt 0\ \\ 
 	 * 		h \gt 0\)
 	 * @post \( getNombreColonnes(init(l,h))=l \\
-	 * 		getNombreLignes(init(l,h))=h \\
-	 * 		\forall i,j \ 0 \le i \le l \ et \ 0 \le j \le h, \ 
-	 * 		Bloc::getType(getBloc(init(l,h),i,h))=Bloc::MURMETAL, \\
-	 * 		Bloc::getType(getBloc(init(l,h),l,j))=Bloc::MURMETAL, \\
-	 * 		si \ i=j=1 \ [2] \ alors \ Bloc::getType(getBloc(init(l,h),i,j))=Bloc::MURMETAL \\
-	 * 		sinon \ Bloc::getType(getBloc(init(l,h),i,j)) \ne Bloc::MURMETAL \)  
+	 * 		getNombreLignes(init(l,h))=h \)
+	 * 		 
 	 */
 	public void init(int l, int h);
 	
@@ -54,7 +56,7 @@ public interface TerrainService {
 	 * @param i un entier
 	 * @param j un entier
 	 * @return le bloc en position (i,j)
-	 * @pre \(0 \le i \le getLargeur(T) \ et \ 0 \le j \le getHauteur(T) \)
+	 * @pre \(0 \le i \lt getNombreColonnes(T) \ et \ 0 \le j \lt getNombreLignes(T) \)
 	 */
 	public BlocService getBloc(int i, int j);
 	
@@ -64,7 +66,7 @@ public interface TerrainService {
 	 * @param b un bloc
 	 * @param i un entier
 	 * @param j un entier
- 	 * @pre \(0 \le i \le getLargeur(T) \ et \ 0 \le j \le getHauteur(T) \)
+ 	 * @pre \(0 \le i \lt getNombreColonnes(T) \ et \ 0 \le j \lt getNombreLignes(T) \)
 	 * @post getBloc(setBloc(T,b,i,j),i,j)==b
 	 */
 	public void setBloc(BlocService b, int i, int j);

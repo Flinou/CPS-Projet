@@ -16,17 +16,36 @@ package Services;
 public interface BlocService {
 	
 	/**
-	 * Créé un nouveau bloc
+	 * Créé un nouveau bloc vide ne contenant rien
 	 * @post getType(init()) == BlocType::VIDE
-	 * @post <br />getPowerUpType(init()) == PowerUpType::RIEN
+	 * 		 <br />getPowerUpType(init()) == PowerUpType::RIEN
 	 */
 	public void init();
+	
+	/**
+	 * Créé un nouveau bloc de type t ne contenant rien
+	 * @param t
+	 * 		un type de bloc
+	 * @post getType(init(t)) == t
+	 * 		 <br />getPowerUpType(init(t)) == PowerUpType::RIEN
+	 */
+	public void init(BlocType t);
+	
+	/**
+	 * Créé un nouveau bloc de type t contenant un powerup p
+	 * @param t
+	 * 		un type de bloc
+	 * @param p
+	 * 		un type de powerup
+	 * @post getType(init(t,p)) == t
+	 *		 <br />getPowerUpType(init(t,p)) == p
+	 */
+	public void init(BlocType t, PowerUpType p);
 	
 	
 	/**
 	 * Donne le type d'un bloc
 	 * @return type du bloc
-	 * @inv \( getType(B) \in BlocType::\{VIDE,MURBRIQUE,MURMETAL\}\)
 	 */
 	public BlocType getType();
 	
@@ -34,14 +53,14 @@ public interface BlocService {
 	/**
 	 * Donne le contenu d'un bloc
 	 * @return contenu du bloc
-	 * @inv \( getPowerUpType(B) \in PowerUpType::\{RIEN,BOMBUP,FIREUP,WALLPASS,BOMBPASS,FIRESUIT\}\)
 	 */
 	public PowerUpType getPowerUpType();
 	
 	
 	/**
 	 * Définit le type d'un bloc
- 	 * @post getType(setType(B,t)) == t
+	 * @post si getType(B) == BlocType::MURMETAL alors getType(setType(B,t)) == BlocType :: MURMETAL
+ 	 * 		 sinon getType(setType(B,t)) == t
 	 * @param b
 	 * 		le type de bloc
 	 */

@@ -32,4 +32,11 @@ public interface VilainService extends PersonnageService {
 	 * @return le type de vilain
 	 */
 	public VilainType getType();
+	
+	
+	/**
+	 * @return la prochaine commande
+	 * @post getCommande(V) \in Commande \backslash \{ Commande::BOMBE \}
+	 */
+	public Commande getCommande();
 }
