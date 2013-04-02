@@ -19,7 +19,7 @@ public interface PersonnageService {
 	 * @param y
 	 * 		position en ordonnée
 	 * @pre \( x \ge 0 \ et \ y \ge 0 \)
-	 * @post 
+	 * @post getSante(init(x,y)) == Sante::VIVANT
 	 */
 	public void init(int x, int y);
 	

@@ -41,6 +41,7 @@ public class TerrainContract extends TerrainDecorator {
 		}
 	}
 	
+	@Override
 	public void init(int l, int h) {
 		if(!(l%2 == 1 && h%2 == 1))
 			throw new PreConditionError("l and h must be odd");
@@ -53,6 +54,7 @@ public class TerrainContract extends TerrainDecorator {
 			throw new PostConditionError("getNombreLignes(init(l,h)) != l");
 	}
 	
+	@Override
 	public int getNombreColonnes() {
 		int r;
 		checkInvariants();
@@ -61,6 +63,7 @@ public class TerrainContract extends TerrainDecorator {
 		return r;
 	}
 
+	@Override
 	public int getNombreLignes() {
 		int r;
 		checkInvariants();
@@ -69,7 +72,7 @@ public class TerrainContract extends TerrainDecorator {
 		return r;
 	}
 	
-	
+	@Override
 	public BlocService getBloc(int i, int j){
 		BlocService b;
 		if(!(0<=i && i<super.getNombreColonnes() && 0<=j && j<super.getNombreLignes()))
@@ -80,6 +83,7 @@ public class TerrainContract extends TerrainDecorator {
 		return b;
 	}
 	
+	@Override
 	public void setBloc(BlocService b, int i, int j) {
 		if(!(0<=i && i<super.getNombreColonnes() && 0<=j && j<super.getNombreLignes()))
 			throw new PreConditionError("unboud i or j");

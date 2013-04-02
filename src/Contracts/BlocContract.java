@@ -12,6 +12,7 @@ public class BlocContract extends BlocDecorator {
 		super(delegate);
 	}
 
+	@Override
 	public void init() {
 		super.init();
 		if(!(super.getType() == BlocType.VIDE))
@@ -21,6 +22,7 @@ public class BlocContract extends BlocDecorator {
 	}
 	
 	
+	@Override
 	public void init(BlocType t) {
 		super.init(t);
 		if(!(super.getType() == t))
@@ -29,6 +31,7 @@ public class BlocContract extends BlocDecorator {
 			throw new PostConditionError("getPowerUpType(init(t))!=PowerUpType::RIEN");
 	}
 	
+	@Override
 	public void init(BlocType t, PowerUpType p) {
 		super.init(t,p);
 		if(!(super.getType() == t))
@@ -39,6 +42,7 @@ public class BlocContract extends BlocDecorator {
 	
 	public void checkInvariants() {}
 
+	@Override
 	public BlocType getType() {
 		BlocType t;
 		checkInvariants();
@@ -47,6 +51,7 @@ public class BlocContract extends BlocDecorator {
 		return t;
 	}
 
+	@Override
 	public PowerUpType getPowerUpType() {
 		PowerUpType p;
 		checkInvariants();
@@ -55,6 +60,7 @@ public class BlocContract extends BlocDecorator {
 		return p;
 	}
 	
+	@Override
 	public void setType(BlocType b) {
 		BlocType t = super.getType();
 		checkInvariants();
@@ -73,6 +79,7 @@ public class BlocContract extends BlocDecorator {
 		
 	}
 	
+	@Override
 	public void setPowerUpType(PowerUpType p) {
 		checkInvariants();
 		super.setPowerUpType(p);
