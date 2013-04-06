@@ -71,8 +71,8 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 			int xB = super.getBombe(num).getX();
 			int yB = super.getBombe(num).getY();
 			int aB = super.getBombe(num).getAmplitude();
-			if ((x==xB && Math.abs(y-yB) > aB) || (y==yB && Math.abs(x-xB) > yB)){
-				throw new InvariantError("Erreur Mis en joue, hors de portee");
+			if ((x==xB && Math.abs(y-yB) > aB) && (y==yB && Math.abs(x-xB) > aB)){
+				throw new InvariantError("Erreur Mis en joue vrai alors que joueur hors de portee");
 			}
 		}
 	

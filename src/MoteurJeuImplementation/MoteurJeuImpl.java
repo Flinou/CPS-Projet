@@ -56,9 +56,9 @@ public class MoteurJeuImpl implements MoteurJeuService {
 		herosforcevitale = 3;
 		kidnappeurforcevitale = 3;
 		terrain.init(15, 13);
-		xheros = 1;
-		yheros = 1;
-		xkidnappeur = 1;
+		xheros = 2;
+		yheros = 2;
+		xkidnappeur = 2;
 		ykidnappeur = 1;
 		santeHeros = Sante.VIVANT;
 		santeKidnappeur = Sante.VIVANT;
@@ -74,10 +74,13 @@ public class MoteurJeuImpl implements MoteurJeuService {
 							break;
 				}
 				break;	
-			}
+			} 
 		}
 		
 	}
+	
+		
+		
 	}
 
 
@@ -103,7 +106,10 @@ public class MoteurJeuImpl implements MoteurJeuService {
 
 	@Override
 	public void pasJeu(Commande com) {
-		// TODO Auto-generated method stub
+		switch (com) {
+		case BAS :
+			
+		}
 		
 	}
 
@@ -179,15 +185,22 @@ public class MoteurJeuImpl implements MoteurJeuService {
 
 	@Override
 	public ArrayList<Integer> getBombeNumeros() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Integer> numbombes = new ArrayList<Integer>();
+		for(BombeService bom : bombes){
+			numbombes.add(bom.getNumero());
+		}
+		return numbombes;
 	}
 
 	@Override
 	public boolean misEnJoue(int x, int y, int num) {
-		// TODO Auto-generated method stub
-		return false;
+		int xB = getBombe(num).getX();
+		int yB = getBombe(num).getY();
+		int aB = getBombe(num).getAmplitude();
+		if ((x==xB && Math.abs(y-yB) < aB) || (y==yB && Math.abs(x-xB) < aB)){
+			return true;
+		} else {
+			return false;
+		}
 	}
-
-
-}
+	}
