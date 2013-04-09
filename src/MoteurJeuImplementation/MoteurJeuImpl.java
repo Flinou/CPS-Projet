@@ -41,6 +41,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	private TerrainService plateaujeu;
 	private ArrayList<Integer> indexbombes;
 	private ArrayList<BombeService> bombes;
+	private HashMap<Integer[],BombeService> hashbombes;
 	private HashMap vilainscoords;
 	private BombeService bombe;
 	private int nbBombesKidnappeur;
@@ -98,26 +99,6 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		
 	}
 
-
-	@Override
-	public int getHerosX() {
-		return persos.get(0).getX();
-		}
-
-	@Override
-	public int getHerosY() {
-		return persos.get(0).getY();
-		}
-
-	@Override
-	public int getKidnappeurX() {
-		return persos.get(1).getX();
-	}
-
-	@Override
-	public int getKidnappeurY() {
-		return persos.get(1).getY();
-	}
 
 	@Override
 	public void pasJeu(Commande com) {
@@ -236,5 +217,11 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	@Override
 	public void bindVilainService(VilainService vilain) {
 		vilains.add(vilain);
+	}
+
+	@Override
+	public ArrayList<PersonnageJouableService> getListeJoueurs() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	}

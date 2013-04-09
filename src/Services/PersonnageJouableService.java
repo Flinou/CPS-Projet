@@ -67,4 +67,16 @@ public interface PersonnageJouableService extends PersonnageService {
 	 */
 	
 	public void getNbBombes();
+	
+	/**
+	 * @return le PowerUp porté par le Personnage
+	 */
+	public PowerUpType getPowerUp();
+	
+	/**
+	 * @return le nombre de pas de jeu restants au joueur pour le powerUp FireSuit
+	 */
+	
+	public int getCompteurFireUp();
+	
 }
