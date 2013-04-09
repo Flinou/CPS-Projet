@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="javadoc">
-    <target name="javadoc">
-        <javadoc access="public" additionalparam=" -tag post:a:&quot;Postcondition : &quot;&#10;-tag pre:a:&quot;Precondition : &quot;&#10;-tag inv:a:&quot;Invariants : &quot;&#10;-tag types:a:&quot;Types : &quot;&#10;-tag use:a:&quot;Use : &quot;&#10;-header &quot;&lt;script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'&gt;&lt;/script&gt;&quot;" author="true" classpath="." destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.7" sourcefiles="src/Services/BlocService.java" sourcepath="src" splitindex="true" use="true" version="true"/>
-    </target>
-</project>

@@ -27,12 +27,37 @@ public interface MoteurJeuService {
 	/**
 	 * Retourne l'abscisse du heros.
 	 */
+	public int getHerosX();
+
+	/**
+	 * Retourne l'ordonnee du heros.
+	 */
+	
+	public int getHerosY();
+
+	/**
+	 * Retourne l'abscisse du kidnappeur.
+	 */
+	
+	public int getKidnappeurX();
+
+	/** 
+	 * Retoune le terrain de jeu
+	 * @return Terrain de jeu
+	 */
+	
 	public TerrainService getTerrain();
 	
 	/**
 	 * Retourne l'ordonnee du kidnappeur.
 	 */
 	
+	public int getKidnappeurY();
+	
+	/**
+	 * Retourne l'etat de sante du heros
+	 * @return Sante Heros
+	 */
 	public Sante getHerosSante();
 	
 	/**
@@ -85,10 +110,6 @@ public interface MoteurJeuService {
 	
 	public BombeService getBombe(int num);
 	
-	/**
-	 * @return la liste des personnages jouables
-	 */
-	public ArrayList<PersonnageJouableService> getListeJoueurs();
 	/**
 	 * Renvoie le tableau contenant les numeros des bombes
 	 * @return tableau d'entiers
@@ -154,61 +175,19 @@ public interface MoteurJeuService {
 	/*Operators*/
 	
 	//pre: !estFini(M)
-	//post : getPasJeuCourant(pasJeu(M))= getPasJeuCourant(M) + 1
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if (perso::getCommande == Commande.GAUCHE && (BlocService::getBloc(old.perso::getX() -1 ,perso::getY())!=BlocType.VIDE) then perso::getX() = old.perso::getX()
-
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if (perso::getCommande == Commande.DROITE && (BlocService::getBloc(old.perso::getX() + 1 ,perso::getY())!=BlocType.VIDE) then perso::getX() = old.perso::getX()
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if (perso::getCommande == Commande.HAUT && (BlocService::getBloc(old.perso::getX() ,perso::getY() - 1)!=BlocType.VIDE) then perso::getY() = old.perso::getY()
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if (perso::getCommande == Commande.BAS && (BlocService::getBloc(old.perso::getX() ,perso::getY() + 1)!=BlocType.VIDE) then perso::getY() = old.perso::getY()
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if (perso::getCommande == Commande.GAUCHE && (BlocService::getBloc(perso::getX(),perso::getY())==BlocType.VIDE) then perso:getX() = max (old.perso:getX(M) - 1,1)
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if perso::getCommande == Commande.DROITE && (BlocService::getBloc(perso::getX(),perso::getY())==BlocType.VIDE) then perso:getX() = min (old.perso:getX(M) + 1,Terrain::getNombreColonnes)
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if perso::getCommande == Commande.HAUT && (BlocService::getBloc(perso::getX(),perso::getY())==BlocType.VIDE) then perso:getY() = max (old.perso:getY(M) - 1,1)
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if perso::getCommande == Commande.BAS && (BlocService::getBloc(perso::getX(),perso::getY())==BlocType.VIDE) then perso:getY() = min (old.perso:getY(M) + 1,Terrain::getNombreLignes())
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  (perso::getCommande != Commande.BAS && perso::getCommande != Commande.HAUT) => perso:getY() = old.perso:getY()	
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post:  if (perso::getCommande != Commande.DROITE && perso::getCommande != Commande.GAUCHE) then perso:getX() = old.perso:getX()
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post : old.getHerosForceVitale=getHerosForceVitale(M)
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post : old.getTerrain()=getTerrain(M)
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post : if (BlocService::getBloc(perso::getX(),perso::getY()).getPowerUpType == PowerUpType.BOMBUP) then old.perso::getNbBombes() + 1 = perso::getNbBombes()
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post : if (BlocService::getBloc(perso::getX(),perso::getY()).getPowerUpType == PowerUpType.FIREUP && old.perso::getForceVitale() != 11) then old.perso::getForceVitale() + 2 = perso::getForceVitale()
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post : if (BlocService::getBloc(perso::getX(),perso::getY()).getPowerUpType == PowerUpType.FIREUP && old.perso::getForceVitale() == 11) then old.perso::getForceVitale() = perso::getForceVitale()
-	
-	//post:  Pour tout perso in getListeJoueurs()
-	//post : if (BlocService::getBloc(perso::getX(),perso::getY()).getPowerUpType == PowerUpType.FIREUP && old.perso::getForceVitale() == 11) then old.perso::getForceVitale() = perso::getForceVitale()
-	
-	
+	//post : getPasJeuCourant(pasJeu(M,Commande c))= getPasJeuCourant(M) + 1
+	//post: getHerosX(pasJeu(M,COMMANDE.GAUCHE)) = min (getHerosX(M) - 1,1)
+	//post: getHerosX(pasJeu(M,COMMANDE.DROITE)) = max (getHerosX(M) + 1, getTerrain(M).getNombreColonnes())
+	//psot :(c != COMMANDE.GAUCHE && c != COMMANDE.DROITE) => getHerosX(pasJeu(M,c)=getHerosX(M)
+	//post: getHerosY(pasJeu(M,COMMANDE.HAUT)) = min (getHerosY(M) - 1, 1)
+	//post: getHerosX(pasJeu(M,COMMANDE.BAS)) = max (getHerosY(M) + 1, getTerrain(M).getNombreLignes())
+	//post :(c != COMMANDE.HAUT && c != COMMANDE.BAS) => getHerosY(pasJeu(M,c)=getHeros(Y))
+	//post :getHerosForceVitale(pasJeu(M,c))=getHerosForceVitale(M)
+	//post :getTerrain(pasJeu(M,c))=getTerrain(M)
+	//post :
 	public void pasJeu(Commande com); 
 	
 	
 	
 
 }
-
