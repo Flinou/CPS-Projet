@@ -2,6 +2,7 @@ package MoteurJeuImplementation;
 
 import java.util.ArrayList;
 
+
 import java.util.HashMap;
 
 
@@ -9,10 +10,17 @@ import Services.BlocType;
 import Services.BombeService;
 import Services.Commande;
 import Services.MoteurJeuService;
+import Services.PersonnageJouableService;
+import Services.PersonnageService;
+import Services.PersonnageType;
+import Services.RequirePersonnageJouableService;
+import Services.RequireTerrainService;
+import Services.RequireVilainService;
 import Services.Resultat;
 import Services.Sante;
 import Services.TerrainService;
 import Services.VilainService;
+import Services.VilainType;
 
 /**
  * 
@@ -21,25 +29,22 @@ import Services.VilainService;
  * @author Antoine FLINOIS
  *
  */
-public class MoteurJeuImpl implements MoteurJeuService {
+public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouableService, RequireTerrainService,
+	RequireVilainService{
+	private ArrayList<PersonnageJouableService> persos = new ArrayList<PersonnageJouableService>();
+	private ArrayList<VilainService> vilains = new ArrayList<VilainService>();
+	private VilainService vilain;
+	private PersonnageJouableService heros;
+	private PersonnageJouableService kidnappeur;
 	private int pasJeuCourant;
-	private int maxPasJeu;
-	private int xheros;
-	private int yheros;
-	private int xkidnappeur;
-	private int ykidnappeur;
-	private Sante santeHeros;
-	private Sante santeKidnappeur;
-	private TerrainService terrain;
-	private int herosforcevitale;
-	private int kidnappeurforcevitale;
+	private int maxiPasJeu;
+	private TerrainService plateaujeu;
 	private ArrayList<Integer> indexbombes;
 	private ArrayList<BombeService> bombes;
 	private HashMap vilainscoords;
 	private BombeService bombe;
 	private int nbBombesKidnappeur;
 	private int nbBombesHeros;
-	private VilainService vilain;
 
 	@Override
 	public int getPasJeuCourant() {
@@ -48,36 +53,46 @@ public class MoteurJeuImpl implements MoteurJeuService {
 
 	@Override
 	public int getMaxPasJeu() {
-		return maxPasJeu;
+		return maxiPasJeu;
 	}
 
 	@Override
 	public void init(int maxPasJeu) {
-		herosforcevitale = 3;
-		kidnappeurforcevitale = 3;
-		terrain.init(15, 13);
-		xheros = 2;
-		yheros = 2;
-		xkidnappeur = 2;
-		ykidnappeur = 1;
-		santeHeros = Sante.VIVANT;
-		santeKidnappeur = Sante.VIVANT;
-		nbBombesKidnappeur = 1;
-		nbBombesHeros = 1;
+		bindPersonnageJouableService(heros);
+		bindPersonnageJouableService(kidnappeur);
+		bindTerrainService(plateaujeu);
+		plateaujeu.init(15, 13);
+		pasJeuCourant = 0;
+		maxiPasJeu = maxPasJeu;
+		boolean hero = true;
+		for (PersonnageJouableService perso : persos){
+			if (hero) {
+				heros = perso;
+				heros.init(1, 1, PersonnageType.HEROS);
+				heros.setForceVitale(3);
+				heros.setBombe(1);
+				hero = false;
+			} else {
+				kidnappeur = perso;
+				kidnappeur.init(getTerrain().getNombreColonnes() - 2, getTerrain().getNombreColonnes() - 2, PersonnageType.MECHANT);
+				kidnappeur.setBombe(1);
+				kidnappeur.setForceVitale(3);
+				
+			}
+		}
 		// Initialisation des coordonnees des vilains
 		for (int j=0;j<4;j++){
-			for (int i=2; i<terrain.getNombreColonnes() - 2; j++){
-				for (int y=2; y<terrain.getNombreLignes() - 2; y++){
-					if (terrain.getBloc(i,y).getType() == BlocType.VIDE){
-							int [] coord = {i,y};
-							vilainscoords.put(vilain, coord);
-							break;
-				}
-				break;	
-			} 
+			bindVilainService(vilain);
 		}
-		
+		boolean ballonOrange = true;
+		for (VilainService vil : vilains){
+			if (ballonOrange){
+				vil.init((int)Math.random()*(plateaujeu.getNombreLignes()-2) + 1,(int)Math.random()*(plateaujeu.getNombreColonnes()-2) +1,VilainType.BALLONORANGE);
+			}else{
+				vil.init((int)Math.random()*(plateaujeu.getNombreLignes()-2) + 1,(int)Math.random()*(plateaujeu.getNombreColonnes()-2) +1,VilainType.FANTOMEBLEU);	
+				
 	}
+		}
 	
 		
 		
@@ -86,56 +101,59 @@ public class MoteurJeuImpl implements MoteurJeuService {
 
 	@Override
 	public int getHerosX() {
-		return xheros;
+		return persos.get(0).getX();
 		}
 
 	@Override
 	public int getHerosY() {
-		return yheros;
+		return persos.get(0).getY();
 		}
 
 	@Override
 	public int getKidnappeurX() {
-		return xkidnappeur;
+		return persos.get(1).getX();
 	}
 
 	@Override
 	public int getKidnappeurY() {
-		return ykidnappeur;
+		return persos.get(1).getY();
 	}
 
 	@Override
 	public void pasJeu(Commande com) {
-		switch (com) {
-		case BAS :
-			
+		
+		for (BombeService bom : bombes){
+			bom.dimCompteARebours();
+			if (bom.vaExploser()){
+				
+			}
 		}
 		
 	}
 
 	@Override
 	public TerrainService getTerrain() {
-		return terrain;
+		return plateaujeu;
 		}
 
 	@Override
 	public Sante getHerosSante() {
-		return santeHeros;
+		return heros.getSante();
 	}
 	@Override
 	public Sante getKidnappeurSante() {
-		return santeKidnappeur;
+		return kidnappeur.getSante();
 	}
 
 	@Override
 	public int getHerosForceVitale() {
-		return herosforcevitale;
+		return heros.getForceVitale();
 		}
 	
 
 	@Override
 	public int getKidnappeurForceVitale() {
-		return kidnappeurforcevitale;
+		return kidnappeur.getForceVitale();
 		}
 	
 
@@ -165,7 +183,7 @@ public class MoteurJeuImpl implements MoteurJeuService {
 	
 	@Override
 	public boolean estFini() {
-		if (santeHeros == Sante.MORT || santeKidnappeur == Sante.MORT || pasJeuCourant == maxPasJeu){
+		if (heros.getSante() == Sante.MORT || kidnappeur.getSante() == Sante.MORT || pasJeuCourant == getMaxPasJeu()){
 			return true;
 		}
 		return false;
@@ -173,9 +191,9 @@ public class MoteurJeuImpl implements MoteurJeuService {
 
 	@Override
 	public Resultat resultatFinal() {
-		if (santeHeros == Sante.MORT){
+		if (getHerosSante() == Sante.MORT){
 			return Resultat.KIDNAPPEURGAGNE;
-		}else if (santeKidnappeur == Sante.MORT){
+		}else if (getKidnappeurSante() == Sante.MORT){
 			return Resultat.HEROSGAGNE;
 		}else{
 			return Resultat.PARTIENULLE;
@@ -202,5 +220,21 @@ public class MoteurJeuImpl implements MoteurJeuService {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public void bindPersonnageJouableService(PersonnageJouableService personne) {
+		persos.add(personne);
+	}
+
+	@Override
+	public void bindTerrainService(TerrainService terrain) {
+		plateaujeu = terrain;
+		
+	}
+
+	@Override
+	public void bindVilainService(VilainService vilain) {
+		vilains.add(vilain);
 	}
 	}

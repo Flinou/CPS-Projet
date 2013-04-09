@@ -16,7 +16,13 @@ public interface BombeService {
 	public int getCompteARebours();
 	public boolean vaExploser();
 	
+	/**
+	 * Modifie le compte a rebours d'une bombe
+	 * @post getCompteARebours(dimCompteArebours()) = getCompteARebours - 1
+	 */
+	public void dimCompteARebours();
 	
+		
 	/**
 	 * Cree une bombe
 	 * @param num

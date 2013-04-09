@@ -53,4 +53,9 @@ public class Bombe implements BombeService {
 		rebours = 10;
 	}
 
+	@Override
+	public void dimCompteARebours() {
+		rebours = rebours - 1;
+	}
+
 }
