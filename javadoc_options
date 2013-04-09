@@ -1,0 +1,6 @@
+-tag post:a:"Postcondition : "
+-tag pre:a:"Precondition : "
+-tag inv:a:"Invariants : "
+-tag types:a:"Types : "
+-tag use:a:"Use : "
+-header "<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>"
