@@ -44,6 +44,19 @@ public interface MoteurJeuService {
 	public Sante getKidnappeurSante();
 	
 	/**
+	 * Retourne le heros
+	 */
+	
+	public PersonnageJouableService getHeros();
+	
+	
+	/**
+	 * Retourne le kidnappeur
+	 */
+	
+	public PersonnageJouableService getKidnappeur();
+	
+	/**
 	 * Retourne la force vitale du heros
 	 * @return force vitale heros
 	 */
@@ -284,7 +297,7 @@ public interface MoteurJeuService {
 	//post : Pour tout bombes in (old.getBombes \ old.getBombeImminentes)
 	//post : bombes::getCompteARebours = old.bombes::getCompteARebours() - 1	
 	
-	public void pasJeu(Commande com); 
+	public void pasJeu(); 
 	
 	
 	

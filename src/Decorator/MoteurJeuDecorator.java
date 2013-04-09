@@ -1,10 +1,12 @@
 package Decorator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import Services.BombeService;
 import Services.Commande;
 import Services.MoteurJeuService;
+import Services.PersonnageJouableService;
 import Services.Resultat;
 import Services.Sante;
 import Services.TerrainService;
@@ -28,28 +30,8 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 
 
 	@Override
-	public int getHerosX() {
-		return delegates.getHerosX();
-	}
-
-	@Override
-	public int getHerosY() {
-		return delegates.getHerosY();
-	}
-
-	@Override
-	public int getKidnappeurX() {
-		return delegates.getKidnappeurX();
-	}
-
-	@Override
-	public int getKidnappeurY() {
-			return delegates.getKidnappeurY();
-	}
-
-	@Override
-	public void pasJeu(Commande com) {
-		delegates.pasJeu(com);
+	public void pasJeu() {
+		delegates.pasJeu();
 	}
 
 	@Override
@@ -115,6 +97,31 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 	@Override
 	public ArrayList<BombeService> getBombes() {
 		return delegates.getBombes();
+	}
+
+	@Override
+	public HashMap<Integer[], BombeService> getHashBombes() {
+		return delegates.getHashBombes();
+	}
+
+	@Override
+	public ArrayList<BombeService> getBombesImminentes() {
+		return delegates.getBombesImminentes();
+		}
+
+	@Override
+	public ArrayList<PersonnageJouableService> getListeJoueurs() {
+		return delegates.getListeJoueurs();
+		}
+
+	@Override
+	public PersonnageJouableService getHeros() {
+		return delegates.getHeros();
+	}
+
+	@Override
+	public PersonnageJouableService getKidnappeur() {
+		return delegates.getKidnappeur();
 	}
 
 }

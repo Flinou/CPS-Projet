@@ -56,6 +56,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	public int getMaxPasJeu() {
 		return maxiPasJeu;
 	}
+	
 
 	@Override
 	public void init(int maxPasJeu) {
@@ -98,10 +99,16 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		
 		
 	}
+	public PersonnageJouableService getHeros(){
+		return heros;
+	}
 
-
+	public PersonnageJouableService getKidnappeur(){
+		return kidnappeur;
+	}
+	
 	@Override
-	public void pasJeu(Commande com) {
+	public void pasJeu() {
 		
 		for (BombeService bom : bombes){
 			bom.dimCompteARebours();
@@ -221,6 +228,18 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 
 	@Override
 	public ArrayList<PersonnageJouableService> getListeJoueurs() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HashMap<Integer[], BombeService> getHashBombes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<BombeService> getBombesImminentes() {
 		// TODO Auto-generated method stub
 		return null;
 	}

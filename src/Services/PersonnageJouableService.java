@@ -66,7 +66,7 @@ public interface PersonnageJouableService extends PersonnageService {
 	 * @return le nombre de bombes portes
 	 */
 	
-	public void getNbBombes();
+	public int getNbBombes();
 	
 	/**
 	 * @return le PowerUp porté par le Personnage
