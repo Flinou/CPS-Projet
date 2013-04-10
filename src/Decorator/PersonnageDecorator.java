@@ -10,7 +10,7 @@ public class PersonnageDecorator implements PersonnageService {
 		this.delegate = delegate;
 	}
 
-	private final PersonnageService delegate;
+	protected PersonnageService delegate;
 	
 	@Override
 	public void init(int x, int y) {

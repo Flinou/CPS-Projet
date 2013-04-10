@@ -22,8 +22,8 @@ public interface VilainService extends PersonnageService {
 	 * 		type de vilain
 	 * @pre \( i \ge 0 \ et \ j \ge 0\)
 	 * @post getType(init(i,j,v)) == v
-	 *		<br /> getX(init(i,j,v)) = x
-	 * 		<br /> getY(init(i,j,v)) = y
+	 *		<br /> getX(init(i,j,v)) == x
+	 * 		<br /> getY(init(i,j,v)) == y
 	 * 		<br /> getSante(init(i,j,v)) == Sante::VIVANT
 	 */
 	public void init(int i, int j, VilainType v);
@@ -36,7 +36,7 @@ public interface VilainService extends PersonnageService {
 	
 	/**
 	 * @return la prochaine commande
-	 * @post getCommande(V) \in Commande \backslash \{ Commande::BOMBE \}
+	 * @post \( getCommande(V) \in Commande \backslash \{ Commande::BOMBE \} \)
 	 */
 	public Commande getCommande();
 }
