@@ -59,8 +59,7 @@ public interface BlocService {
 	
 	/**
 	 * Définit le type d'un bloc
-	 * @post si getType(B) == BlocType::MURMETAL alors getType(setType(B,t)) == BlocType :: MURMETAL
- 	 * 		 sinon getType(setType(B,t)) == t
+	 * @post getType(setType(B,t)) == t
 	 * @param b
 	 * 		le type de bloc
 	 */
