@@ -23,8 +23,8 @@ public interface PersonnageJouableService extends PersonnageService {
 	 * @pre \( i \ge 0 \ et \ j \ge 0\)
 	 * @post getType(init(i,j,v)) == v
 	 * 		<br /> getForceVitale(init(i,j,v)) == 3
-	 *		<br /> getX(init(i,j,v)) = x
-	 * 		<br /> getY(init(i,j,v)) = y
+	 *		<br /> getX(init(i,j,v)) = i
+	 * 		<br /> getY(init(i,j,v)) = j
 	 * 		<br /> getSante(init(i,j,v)) == Sante::VIVANT
 	 * 		<br /> getCompteurFireUp(init(i,j,v)) == 0
 	 * 		<br /> getNbBombes(init(i,j,v)) == 1
