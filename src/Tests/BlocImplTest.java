@@ -23,38 +23,56 @@ public class BlocImplTest {
 	
 	@Test
 	public void test1() {
-		System.out.println("Test avec l'init sans argument : ");
+		System.out.println("Test avec l'init sans argument et tous les états possibles: ");
 		bloc1.init();
-		assertTrue("Le bloc est vide",bloc1.getType() == BlocType.VIDE);
-		assertTrue("Le bloc n'a pas de power-up",bloc1.getPowerUpType() == PowerUpType.RIEN);
-		bloc1.setType(BlocType.MURMETAL);
-		assertTrue("Le bloc est un MURMETAL",bloc1.getType() == BlocType.MURMETAL);
-		bloc1.setPowerUpType(PowerUpType.BOMBUP);
-		assertTrue("Le bloc a un power-up BOMBUP",bloc1.getPowerUpType() == PowerUpType.BOMBUP);		
+		assertTrue("type initial OK",bloc1.getType() == BlocType.VIDE);
+		assertTrue("power-up inital OK",bloc1.getPowerUpType() == PowerUpType.RIEN);
+		for(BlocType b : BlocType.values()) {
+			bloc1.setType(b);
+			assertTrue("changement de type OK",bloc1.getType() == b);
+			for(PowerUpType p : PowerUpType.values()) {
+				bloc1.setPowerUpType(p);
+				assertTrue("changement de power-up OK",bloc1.getPowerUpType() == p);
+			}
+		}		
 	}
 	
 	@Test
 	public void test2() {
-		System.out.println("Test avec l'init avec 1 argument : ");
-		bloc2.init(BlocType.MURBRIQUE);
-		assertTrue("Le bloc est un mur en brique",bloc2.getType() == BlocType.MURBRIQUE);
-		assertTrue("Le bloc n'a pas de power-up",bloc2.getPowerUpType() == PowerUpType.RIEN);
-		bloc2.setType(BlocType.MURMETAL);
-		assertTrue("Le bloc est un MURMETAL",bloc2.getType() == BlocType.MURMETAL);
-		bloc2.setPowerUpType(PowerUpType.BOMBUP);
-		assertTrue("Le bloc a un power-up BOMBUP",bloc2.getPowerUpType() == PowerUpType.BOMBUP);		
+		System.out.println("Test avec l'init avec 1 argument et tous les états possibles: ");
+		for(BlocType b : BlocType.values()) {
+			bloc2.init(b);
+			assertTrue("type initial OK",bloc2.getType()==b);
+			assertTrue("power-up initial OK",bloc2.getPowerUpType() == PowerUpType.RIEN);
+		}
+		for(BlocType b : BlocType.values()) {
+			bloc2.setType(b);
+			assertTrue("changement de type OK",bloc2.getType() == b);
+			for(PowerUpType p : PowerUpType.values()) {
+				bloc2.setPowerUpType(p);
+				assertTrue("changement de power-up OK",bloc2.getPowerUpType() == p);
+			}
+		}
 	}
 
 	@Test
 	public void test3() {
-		System.out.println("Test avec l'init avec 2 argument : ");
-		bloc3.init(BlocType.MURMETAL,PowerUpType.WALLPASS);
-		assertTrue("Le bloc est un mur en metal",bloc3.getType() == BlocType.MURMETAL);
-		assertTrue("Le bloc a un power-up WALLPASS",bloc3.getPowerUpType() == PowerUpType.WALLPASS);
-		bloc3.setType(BlocType.VIDE);
-		assertTrue("Le bloc est vide",bloc3.getType() == BlocType.VIDE);
-		bloc3.setPowerUpType(PowerUpType.BOMBUP);
-		assertTrue("Le bloc a un power-up BOMBUP",bloc3.getPowerUpType() == PowerUpType.BOMBUP);		
+		System.out.println("Test avec l'init avec 2 argument et tous les états possibles: ");
+		for(BlocType b : BlocType.values()) {
+			for(PowerUpType p : PowerUpType.values()) {
+				bloc3.init(b,p);
+				assertTrue("type initial OK",bloc3.getType()==b);
+				assertTrue("power-up initial OK",bloc3.getPowerUpType() == p);
+			}
+		}
+		for(BlocType b : BlocType.values()) {
+			bloc3.setType(b);
+			assertTrue("changement de type OK",bloc3.getType() == b);
+			for(PowerUpType p : PowerUpType.values()) {
+				bloc3.setPowerUpType(p);
+				assertTrue("changement de power-up OK",bloc3.getPowerUpType() == p);
+			}
+		}
 	}
 	
 }
