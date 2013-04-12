@@ -9,21 +9,46 @@ package Contracts;
  */ 
 import java.util.ArrayList;
 
+
 import java.util.HashMap;
 
 import Decorator.MoteurJeuDecorator;
 import Services.*;
 import Error.*;
-import Implementation.Terrain;
 
 public class MoteurJeuContract extends MoteurJeuDecorator {
 	
 	public void checkInvariant(){
-
-		int num = 5;
+		TerrainService terrain = super.getTerrain();
 		PersonnageJouableService heros = super.getHeros();
 		int x = heros.getX();
 		int y = heros.getY();
+		int i = 0;
+		//Verification que les bords sont des murs metalliques
+		for (int j=0;j<terrain.getNombreColonnes()-1;j++){
+			if (terrain.getBloc(i, j).getType() != BlocType.MURMETAL){
+				throw new InvariantError("Premiere ligne non remplie par des murs mettaliques");
+			}
+		}
+
+		int j=0;
+		for (i =0;i<terrain.getNombreLignes()-1;i++){
+			if (terrain.getBloc(i, j).getType() != BlocType.MURMETAL){
+				throw new InvariantError("Premiere colonne non remplie par des murs mettaliques");
+			}
+		}
+		j = terrain.getNombreColonnes() -1;
+		for (i=0;i<terrain.getNombreLignes()-1;i++){
+			if (terrain.getBloc(i, j).getType() != BlocType.MURMETAL){
+				throw new InvariantError("Derniere colonne non remplie par des murs mettaliques");
+			}
+		}
+		i = terrain.getNombreLignes() - 1;
+		for (j=0;j<terrain.getNombreLignes()-1;j++){
+			if (terrain.getBloc(i, j).getType() != BlocType.MURMETAL){
+				throw new InvariantError("Derniere ligne non remplie par des murs mettaliques");
+			}
+		}
 		if (super.getPasJeuCourant() < 1 || super.getPasJeuCourant()>super.getMaxPasJeu()){
 			throw new InvariantError ("Le pas de jeu courant n'est pas compris entre 1 et le maximum possible.");
 		}
@@ -47,7 +72,7 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (super.getNbBombes() != super.getBombeNumeros().size()){
 			throw new InvariantError("La taille de la liste du numero des bombes n'est pas egale au nombre de bombes");
 		}
-		
+		 /* CHELOU
 		if (super.bombeExiste(num)){
 			int cpt = -1;
 			for (int i=0;i<getNbBombes();i++){
@@ -58,6 +83,7 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 				} 
 			}
 		}
+		*/
 		if (super.estFini() && (super.getHerosSante() != Sante.MORT) && (super.getPasJeuCourant() < getMaxPasJeu())){
 			throw new InvariantError("Fin du jeu imprevue");
 		}
@@ -67,6 +93,7 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (super.resultatFinal() == Resultat.PARTIENULLE && super.getHerosSante() != Sante.VIVANT){
 			throw new InvariantError("Resultat final pour la partie nulle imprevue");
 		}
+		for (Integer num : super.getBombeNumeros()){
 		if (super.misEnJoue(x,y,num)){
 			int xB = super.getBombe(num).getX();
 			int yB = super.getBombe(num).getY();
@@ -75,11 +102,10 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 				throw new InvariantError("Erreur Mis en joue vrai alors que joueur hors de portee");
 			}
 		}
+		}
 	
 	}
 	public void init(int maxPasJeu){
-		//inv
-		checkInvariant();
 		//pre : init(MaxPasJeu) require maxPasJeu >= 0
 		if (maxPasJeu < 0){
 			throw new PreConditionError("Le nombre max de Pas de Jeu est inferieur a zero");
@@ -140,31 +166,40 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		return super.misEnJoue(x,y,num);
 	}
 	public void pasJeu(){
-		HashMap<PersonnageType, Integer[]> oldcoordpersos = new HashMap();
-		HashMap<PersonnageType, Integer> oldNbBombespersos = new HashMap();
-		HashMap<PersonnageType, Integer> oldForceVitpersos = new HashMap();
-		HashMap<PersonnageType, PowerUpType> oldPowerUppersos = new HashMap();
-		HashMap<PersonnageType, Integer> oldCompteurFireSuit = new HashMap();
-		HashMap<PersonnageType, Boolean> aFireSuit = new HashMap();
-		HashMap<PersonnageType, PowerUpType[]> oldPowerUpAutour = new HashMap();
-		HashMap<PersonnageType, BlocType[]> oldBlocTypeAutour = new HashMap();
-		HashMap<VilainService, Integer[]> oldCoordsVilains = new HashMap();
+		
+		HashMap<PersonnageType, Integer[]> oldcoordpersos = new HashMap<PersonnageType, Integer[]>();
+		HashMap<PersonnageType, Integer> oldNbBombespersos = new HashMap<PersonnageType, Integer>();
+		HashMap<PersonnageType, Integer> oldForceVitpersos = new HashMap<PersonnageType, Integer>();
+		HashMap<PersonnageType, PowerUpType> oldPowerUppersos = new HashMap<PersonnageType, PowerUpType>();
+		HashMap<PersonnageType, Integer> oldCompteurFireSuit = new HashMap<PersonnageType, Integer>();
+		HashMap<PersonnageType, Boolean> aFireSuit = new HashMap<PersonnageType, Boolean>();
+		HashMap<PersonnageType, PowerUpType[]> oldPowerUpAutour = new HashMap<PersonnageType, PowerUpType[]>();
+		HashMap<VilainService, Integer[]> oldCoordsVilains = new HashMap<VilainService, Integer[]>();
+		HashMap<Integer[],BombeService> hashBombes = super.getHashBombes();
+		
 		checkInvariant();
+		
+		TerrainService terrain = super.getTerrain();
+		
+		
 		//Anciennes coordonnées, nombres de bombes, de chaques personnages
 		for (PersonnageJouableService personnage : super.getListeJoueurs()){
-			Integer[] coord = {personnage.getX(),personnage.getY()};
-			TerrainService terrain = super.getTerrain();
 			PersonnageType type = personnage.getType();
+			//Anciennes coordonnées du joueur
+			Integer[] coord = {personnage.getX(),personnage.getY()};
+			oldcoordpersos.put(type, coord);
+			//Tableau regroupant les PowerUp entourant le joueur avant le coup
 			PowerUpType[] oldPowerUp = {terrain.getBloc(personnage.getX() - 1, personnage.getY()).getPowerUpType(),terrain.getBloc(personnage.getX() + 1, personnage.getY()).getPowerUpType(),terrain.getBloc(personnage.getX(), personnage.getY() - 1).getPowerUpType(),terrain.getBloc(personnage.getX(), personnage.getY() + 1).getPowerUpType()}; 
 			oldPowerUpAutour.put(type, oldPowerUp);
-			// Tableau recuperant le type des blocs autour du joueur avant son coup (premier element : gauche du joueur, deuxieme : droite du joueur, troisieme : haut, quatrieme : bas)
-			BlocType[] oldBlocType = {terrain.getBloc(coord[0] - 1, coord[1]).getType(),terrain.getBloc(coord[0]+1,coord[1]).getType(),terrain.getBloc(coord[0],coord[1]-1).getType(),terrain.getBloc(coord[0], coord[1] + 1).getType()};
-			oldBlocTypeAutour.put(type, oldBlocType);
-			oldcoordpersos.put(type, coord);
+			//Ancien nombre de bombes portés par le joueur
 			oldNbBombespersos.put(type, personnage.getNbBombes());
+			//Ancienne force vitale du joueur
 			oldForceVitpersos.put(type, personnage.getForceVitale());
+			//Ancien PowerUp porté par le joueur
 			oldPowerUppersos.put(type, personnage.getPowerUp());
+			//Ancien compteur pour le PowerUp fireSuit du joueur
 			oldCompteurFireSuit.put(type, personnage.getCompteurFireSuit());
+			//Boolean vrai si le joueur portait FireSuit avant le pasJeu
 			if (personnage.getPowerUp() == PowerUpType.FIRESUIT){
 				aFireSuit.put(type, true);
 			} else {
@@ -172,23 +207,24 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 			}
 		}
 		
+		//Anciennes coordonnées des Vilains
 		for(VilainService vil : super.getVilains()){
 			Integer[] coor = {vil.getX(),vil.getY()};
 			oldCoordsVilains.put(vil, coor);
 		}
 		
 		
-		HashMap<Integer[],BombeService> hashBombes = super.getHashBombes();
-		int oldpasJeuCour = super.getPasJeuCourant();
-		int oldforvitahero = super.getHerosForceVitale(); 
-		TerrainService terr = super.getTerrain();
-		boolean verifbombe = false;
+		int oldpasJeuCour = super.getPasJeuCourant(); 
+		// Liste des bombes non prêtes à exploser
 		ArrayList<BombeService> tranquilles = new ArrayList<BombeService>();
+		// Liste des bombes prêtes à exploser
 		ArrayList<BombeService> imminentes = new ArrayList<BombeService>();
+		// Liste des comptes à rebours des bombes non prêtes à exploser
 		HashMap<Integer,Integer> rebourstranquilles = new HashMap<Integer,Integer>();
-		int nbbombes = super.getNbBombes();
-		TerrainService ancienterrain = terr.clone();
+		//Copie par Valeur du terrain et non par référence
+		TerrainService ancienterrain = terrain.clone();
 		
+		//Initialisation des listes de bombes
 		for (BombeService bombe : super.getBombes()){
 			if (!bombe.vaExploser()){
 				tranquilles.add(bombe);
@@ -197,13 +233,13 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 				imminentes.add(bombe);
 			}
 		}
+		
+		
 		//pre : !estFini()
 		if (estFini()){
 			throw new PreConditionError("PasJeu() impossible, la partie est finie");
 		}
 		super.pasJeu();
-		//Commande comHeros = super.getHeros().getCommande();
-		//Commande comKidnap = super.getKidnappeur().getCommande();
 		
 		checkInvariant();
 		
@@ -211,6 +247,9 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 			PersonnageType type = perso.getType();
 			int ancienx = oldcoordpersos.get(type)[0];
 			int ancieny = oldcoordpersos.get(type)[1];
+			if (oldpasJeuCour != super.getPasJeuCourant() - 1){
+				throw new PostConditionError("PasJeu non incrémenté");
+			}
 			if (super.getTerrain().getBloc(perso.getX(),perso.getY()).getType() != BlocType.VIDE){
 				throw new PostConditionError("Personnage sur une case non vide");
 			}
@@ -255,16 +294,16 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 			}
 			
 			int[] coords = {perso.getX(),perso.getY()};
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX() - 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.DROITE && ancienx + 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX() - 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.DROITE && ancienx + 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX() + 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.GAUCHE && ancienx - 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX() + 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.GAUCHE && ancienx - 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX(), perso.getY() + 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.HAUT && ancieny - 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX(), perso.getY() + 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.HAUT && ancieny - 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX(), perso.getY() - 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.BAS && ancieny + 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX(), perso.getY() - 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.BAS && ancieny + 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
 			if (hashBombes.get(coords) != null && perso.getPowerUp() != PowerUpType.BOMBPASS){
@@ -294,7 +333,7 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 				throw new PostConditionError("Joueur a crée une bombe mais s'est déplacé");
 			}
 			for (BombeService bombe : super.getBombes()){
-			if (super.misEnJoue(ancienx,ancieny,bombe.getNumero()) && perso.getPowerUp() != PowerUpType.FIRESUIT && perso.getSante() != Sante.MORT){
+			if (super.misEnJoue(ancienx,ancieny,bombe.getNumero()) && aFireSuit.get(perso.getType()) != true && perso.getSante() != Sante.MORT){
 				throw new PostConditionError("Joueur non mort alors que la bombe a explosé");
 			
 				}
@@ -305,9 +344,9 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 				}
 			}
 			for (BombeService bombeimmin : imminentes){
-			for (int j = 1; j<terr.getNombreColonnes() -2 ;j++){
-				for (int i = 1; i<terr.getNombreLignes() - 2; i++){
-					if (((super.misEnJoue(i, j, bombeimmin.getNumero()) && ancienterrain.getBloc(i, j).getType() == BlocType.MURBRIQUE && terr.getBloc(i, j).getType() != BlocType.VIDE) || (super.misEnJoue(i, j, bombeimmin.getNumero()) && ancienterrain.getBloc(i, j).getType() == BlocType.VIDE && ancienterrain.getBloc(i, j).getPowerUpType() != PowerUpType.RIEN && terr.getBloc(i, j).getPowerUpType() != PowerUpType.RIEN))){
+			for (int j = 1; j<terrain.getNombreColonnes() -2 ;j++){
+				for (int i = 1; i<terrain.getNombreLignes() - 2; i++){
+					if (((super.misEnJoue(i, j, bombeimmin.getNumero()) && ancienterrain.getBloc(i, j).getType() == BlocType.MURBRIQUE && terrain.getBloc(i, j).getType() != BlocType.VIDE) || (super.misEnJoue(i, j, bombeimmin.getNumero()) && ancienterrain.getBloc(i, j).getType() == BlocType.VIDE && ancienterrain.getBloc(i, j).getPowerUpType() != PowerUpType.RIEN && terrain.getBloc(i, j).getPowerUpType() != PowerUpType.RIEN))){
 						throw new PostConditionError("Explosion de bombe n'a pas détruit un mur ou alors un tresor");
 					}
 				}
