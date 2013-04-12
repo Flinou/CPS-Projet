@@ -202,34 +202,77 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 			Commande comande = perso.getCommande();
 			int xperso = perso.getX();
 			int yperso = perso.getY();
+			Integer[] coordperso = {perso.getX(),perso.getY()};
 			switch (comande){
 			case DROITE:
-				Integer [] coordscote = {xperso+1, yperso};
+				Integer [] coordsdroit = {xperso+1, yperso};
 				if (perso.getPowerUp() != PowerUpType.WALLPASS && perso.getPowerUp() != PowerUpType.BOMBPASS){
-					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.VIDE && !(hashbombes.containsKey(coordscote))){
+					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.VIDE && !(hashbombes.containsKey(coordsdroit))){
 						perso.setX(xperso + 1);
 					}
 				}else if (perso.getPowerUp() == PowerUpType.WALLPASS){
 					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.MURBRIQUE && plateaujeu.getBloc(xperso + 2, yperso).getType() == BlocType.VIDE ){
 						perso.setX(xperso + 2);
 				}else if (perso.getPowerUp() == PowerUpType.BOMBPASS){
-					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.VIDE && (hashbombes.containsKey(coordscote))){
+					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.VIDE && (hashbombes.containsKey(coordsdroit))){
 						perso.setX(xperso + 1);
 					}
 				}
-				}
+			}
 			break;
 			case GAUCHE:
+				Integer [] coordsgauche = {xperso-1, yperso};
+				if (perso.getPowerUp() != PowerUpType.WALLPASS && perso.getPowerUp() != PowerUpType.BOMBPASS){
+					if (plateaujeu.getBloc(xperso - 1, yperso).getType() == BlocType.VIDE && !(hashbombes.containsKey(coordsgauche))){
+						perso.setX(xperso - 1);
+					}
+				}else if (perso.getPowerUp() == PowerUpType.WALLPASS){
+					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.MURBRIQUE && plateaujeu.getBloc(xperso - 2, yperso).getType() == BlocType.VIDE ){
+						perso.setX(xperso - 2);
+				}else if (perso.getPowerUp() == PowerUpType.BOMBPASS){
+					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.VIDE && (hashbombes.containsKey(coordsgauche))){
+						perso.setX(xperso - 1);
+					}
+				}
+			}
 			break;
 			case HAUT:
+				Integer [] coordshaut = {xperso, yperso - 1};
+				if (perso.getPowerUp() != PowerUpType.WALLPASS && perso.getPowerUp() != PowerUpType.BOMBPASS){
+					if (plateaujeu.getBloc(xperso, yperso - 1).getType() == BlocType.VIDE && !(hashbombes.containsKey(coordshaut))){
+						perso.setY(yperso - 1);
+					}
+				}else if (perso.getPowerUp() == PowerUpType.WALLPASS){
+					if (plateaujeu.getBloc(xperso, yperso - 1).getType() == BlocType.MURBRIQUE && plateaujeu.getBloc(xperso, yperso - 2).getType() == BlocType.VIDE ){
+						perso.setY(yperso - 2);
+				}else if (perso.getPowerUp() == PowerUpType.BOMBPASS){
+					if (plateaujeu.getBloc(xperso, yperso - 1).getType() == BlocType.VIDE && (hashbombes.containsKey(coordshaut))){
+						perso.setY(yperso - 1);
+					}
+				}
+			}
 				break;
 			case BAS:
-			
-				
+				Integer [] coordsbas = {xperso, yperso + 1};
+				if (perso.getPowerUp() != PowerUpType.WALLPASS && perso.getPowerUp() != PowerUpType.BOMBPASS){
+					if (plateaujeu.getBloc(xperso, yperso + 1).getType() == BlocType.VIDE && !(hashbombes.containsKey(coordsbas))){
+						perso.setY(yperso + 1);
+					}
+				}else if (perso.getPowerUp() == PowerUpType.WALLPASS){
+					if (plateaujeu.getBloc(xperso, yperso + 1).getType() == BlocType.MURBRIQUE && plateaujeu.getBloc(xperso, yperso + 2).getType() == BlocType.VIDE ){
+						perso.setY(yperso + 2);
+				}else if (perso.getPowerUp() == PowerUpType.BOMBPASS){
+					if (plateaujeu.getBloc(xperso, yperso - 1).getType() == BlocType.VIDE && (hashbombes.containsKey(coordsbas))){
+						perso.setY(yperso + 1);
+					}
+				}
+			}
 			break;
-			
-			
 			case BOMBE:
+			BombeService bombe = new Bombe();
+			bombe.init(getNbBombes() + 1, xperso, yperso, a)
+			addHashBombes(coordperso, bombe)
+				
 			break;
 			
 			}
