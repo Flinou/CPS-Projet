@@ -1,7 +1,7 @@
 package Decorator;
 
 import Services.BlocService;
-import Implementation.Terrain;
+import Implementation.TerrainImpl;
 import Services.TerrainService;
 
 public class TerrainDecorator implements TerrainService, Cloneable {
@@ -37,7 +37,7 @@ public class TerrainDecorator implements TerrainService, Cloneable {
 		delegate.setBloc(b, i, j);
 	}
 	
-	public Terrain clone(){
+	public TerrainImpl clone(){
 		return delegate.clone();
 	}
 

@@ -39,7 +39,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	private PersonnageJouableService kidnappeur;
 	private int pasJeuCourant;
 	private int maxiPasJeu;
-	private TerrainService plateau = new Terrain();
+	private TerrainService plateau = new TerrainImpl();
 	private TerrainService plateaujeu;
 	private ArrayList<Integer> indexbombes;
 	private ArrayList<BombeService> bombes;

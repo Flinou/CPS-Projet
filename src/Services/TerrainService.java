@@ -1,5 +1,5 @@
 package Services;
-import Implementation.Terrain;
+import Implementation.TerrainImpl;
 
 /**
  * 
@@ -72,6 +72,6 @@ public interface TerrainService {
 	 */
 	public void setBloc(BlocService b, int i, int j);
 	
-	public Terrain clone(); 
+	public TerrainImpl clone(); 
 	
 }
