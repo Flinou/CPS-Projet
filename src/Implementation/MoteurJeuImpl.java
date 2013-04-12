@@ -3,6 +3,7 @@ package Implementation;
 import java.util.ArrayList;
 
 
+
 import java.util.HashMap;
 
 
@@ -202,6 +203,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 			Commande comande = perso.getCommande();
 			int xperso = perso.getX();
 			int yperso = perso.getY();
+			PowerUpType powerup = PowerUpType.RIEN;
 			Integer[] coordperso = {perso.getX(),perso.getY()};
 			switch (comande){
 			case DROITE:
@@ -209,6 +211,10 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 				if (perso.getPowerUp() != PowerUpType.WALLPASS && perso.getPowerUp() != PowerUpType.BOMBPASS){
 					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.VIDE && !(hashbombes.containsKey(coordsdroit))){
 						perso.setX(xperso + 1);
+						if (plateaujeu.getBloc(xperso, yperso).getPowerUpType() != PowerUpType.RIEN){
+							powerup = plateaujeu.getBloc(xperso, yperso).getPowerUpType();
+							perso.setPowerUp(powerup);
+						}
 					}
 				}else if (perso.getPowerUp() == PowerUpType.WALLPASS){
 					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.MURBRIQUE && plateaujeu.getBloc(xperso + 2, yperso).getType() == BlocType.VIDE ){
@@ -270,20 +276,54 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 			break;
 			case BOMBE:
 			BombeService bombe = new Bombe();
-			bombe.init(getNbBombes() + 1, xperso, yperso, a)
-			addHashBombes(coordperso, bombe)
-				
+			bombe.init(getNbBombes() + 1, xperso, yperso, perso.getForceVitale());
+			addHashBombes(coordperso, bombe);
+			bombes.add(bombe);
 			break;
-			
 			}
-			
-			
+			for (VilainService vil : getVilains()){
+			Commande com = vil.getCommande();
+			int xvilain = vil.getX();
+			int yvilain = vil.getY();
+			switch (com){
+			case DROITE : 
+				if ((vil.getType() == VilainType.BALLONORANGE) && (plateaujeu.getBloc(xvilain + 1, yvilain).getType() == BlocType.VIDE)){
+					vil.setX(xvilain + 1);
+				} else if ((vil.getType() == VilainType.FANTOMEBLEU) && (plateaujeu.getBloc(xvilain + 1, yvilain).getType() != BlocType.MURMETAL)){
+					vil.setX(xvilain + 1);
+				}
+				break;
+			case GAUCHE : 
+				if ((vil.getType() == VilainType.BALLONORANGE) && (plateaujeu.getBloc(xvilain - 1, yvilain).getType() == BlocType.VIDE)){
+					vil.setX(xvilain + 1);
+				} else if ((vil.getType() == VilainType.FANTOMEBLEU) && (plateaujeu.getBloc(xvilain - 1, yvilain).getType() != BlocType.MURMETAL)){
+					vil.setX(xvilain + 1);
+				}
+				break;
+			case HAUT : 
+				if ((vil.getType() == VilainType.BALLONORANGE) && (plateaujeu.getBloc(xvilain, yvilain - 1).getType() == BlocType.VIDE)){
+					vil.setY(yvilain - 1);
+				} else if ((vil.getType() == VilainType.FANTOMEBLEU) && (plateaujeu.getBloc(xvilain, yvilain - 1).getType() != BlocType.MURMETAL)){
+					vil.setY(yvilain - 1);
+				}
+				break;
+			case BAS : 
+				if ((vil.getType() == VilainType.BALLONORANGE) && (plateaujeu.getBloc(xvilain, yvilain + 1).getType() == BlocType.VIDE)){
+					vil.setY(yvilain + 1);
+				} else if ((vil.getType() == VilainType.FANTOMEBLEU) && (plateaujeu.getBloc(xvilain, yvilain + 1).getType() != BlocType.MURMETAL)){
+					vil.setY(yvilain + 1);
+				}
+				break;		
+			}
 		}
-		
-		
-		
+		switch (powerup){
+		case BOMBUP:
+			perso.addBombe();
+			break;
+		}
 		}else{
-			resultatFinal();
+		resultatFinal();
+		System.out.println("Fin de la partie");
 		}
 		
 	}
@@ -316,7 +356,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 
 	@Override
 	public boolean bombeExiste(int num) {
-		if (bombes.get(num) != null){
+		if (getBombe(num) != null){
 			return true;
 		}else{
 			return false;
@@ -330,7 +370,12 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 
 	@Override
 	public BombeService getBombe(int num) {
-		return bombes.get(num);
+		for (BombeService bom : getBombes()){
+			if (bom.getNumero() == num){
+				return bom;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -373,11 +418,41 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		int xB = getBombe(num).getX();
 		int yB = getBombe(num).getY();
 		int aB = getBombe(num).getAmplitude();
+		
 		if ((x==xB && Math.abs(y-yB) < aB) || (y==yB && Math.abs(x-xB) < aB)){
-			return true;
+			if (x==xB){
+				if (y<yB){
+					for (int i=y+1;i<yB;i++){
+						if (plateaujeu.getBloc(x, i).getType() == BlocType.MURMETAL || plateaujeu.getBloc(x, i).getPowerUpType() != PowerUpType.RIEN){
+							return false;
+						}
+					}
+				} else if (y>yB){
+					for (int i=y-1;i>yB;i--){
+						if (plateaujeu.getBloc(x, i).getType() == BlocType.MURMETAL || plateaujeu.getBloc(x, i).getPowerUpType() != PowerUpType.RIEN){
+							return false;
+						}
+					}
+				}
+			} else if (y == yB){
+				if (x<xB){
+					for (int i=x+1;i<xB;i++){
+						if (plateaujeu.getBloc(i, y).getType() == BlocType.MURMETAL || plateaujeu.getBloc(i, y).getPowerUpType() != PowerUpType.RIEN){
+							return false;
+						}
+					}
+				} else if (x>xB){
+					for (int i=x-1;i>xB;i--){
+						if (plateaujeu.getBloc(i, y).getType() == BlocType.MURMETAL || plateaujeu.getBloc(i, y).getPowerUpType() != PowerUpType.RIEN){
+							return false;
+						}
+					}
+				}
+			}
 		} else {
 			return false;
 		}
+		return true;
 	}
 
 	@Override
