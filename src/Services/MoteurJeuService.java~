@@ -225,6 +225,12 @@ public interface MoteurJeuService {
 	//post:  if (perso::getCommande != Commande.DROITE && perso::getCommande != Commande.GAUCHE) then perso:getX() = old.perso:getX()
 	
 	//post:  Pour tout perso in getListeJoueurs()
+	//post : old.getHerosForceVitale=getHerosForceVitale(M)
+	
+	//post:  Pour tout perso in getListeJoueurs()
+	//post : old.getTerrain()=getTerrain(M)
+	
+	//post:  Pour tout perso in getListeJoueurs()
 	//post : if (BlocService::getBloc(perso::getX(),perso::getY()).getPowerUpType == PowerUpType.BOMBUP) And perso::getVientDobtenir == true then old.perso::getNbBombes() + 1 = perso::getNbBombes()
 	
 	//post:  Pour tout perso in getListeJoueurs()
@@ -269,7 +275,18 @@ public interface MoteurJeuService {
 	//post : (perso::getPowerUp == TypePowerUp.FIRESUIT) => perso::getCompteurFireUp() = old.perso::getCompteurFireUp() - 1	
 	
 	//post : Pour tout perso in getListeJoueurs()
-	//post:  ((type = old.BlocService::getBloc(perso::getX(), perso::getY()).getPowerUpType) != PowerUpType.RIEN) => perso::getPowerUp == type)  
+	//post:  ((type = BlocService::getBloc(perso::getX() - 1,perso::getY()).getPowerUpType) != PowerUpType.RIEN and  BlocService::getBloc(perso::getX()-1,perso::getY()).getType == Bloc.VIDE and perso::getCommande() == Commande.GAUCHE ) => perso::getPowerUp == type)  
+	
+	//post : Pour tout perso in getListeJoueurs()
+	//post:  ((type = BlocService::getBloc(perso::getX() + 1,perso::getY()).getPowerUpType) != PowerUpType.RIEN and  BlocService::getBloc(perso::getX()+1,perso::getY()).getType == Bloc.VIDE and perso::getCommande() == Commande.DROITE ) => perso::getPowerUp == type)  
+	
+	
+	//post : Pour tout perso in getListeJoueurs()
+	//post:  ((type = BlocService::getBloc(perso::getX(),perso::getY() + 1).getPowerUpType) != PowerUpType.RIEN and  BlocService::getBloc(perso::getX(),perso::getY()+1).getType == Bloc.VIDE and perso::getCommande() == Commande.BAS) => perso::getPowerUp == type)  
+	
+	
+	//post : Pour tout perso in getListeJoueurs()
+	//post:  ((type = BlocService::getBloc(perso::getX(),perso::getY() - 1).getPowerUpType) != PowerUpType.RIEN and  BlocService::getBloc(perso::getX(),perso::getY()-1).getType == Bloc.VIDE and perso::getCommande() == Commande.HAUT) => perso::getPowerUp == type)  
 	
 	//post : Pour tout perso in getListeJoueurs()
 	//post : (perso::getCommande()==Commande.BOMBE =>  Bombe::init(getNbBombes() - 1,perso::getX(),perso::getY(),perso::getForceVitale()) \belongs getBombes())
@@ -296,7 +313,7 @@ public interface MoteurJeuService {
 	
 	//post : Pour toutes bombes in old.getBombesImminentes
 	//post : Pour tout bloc old.b t.q misEnJoue(bombe::getnum,old.b::getX,old.b::getY)
-	//post : (old.b::getType == Type.MURBRIQUE => b.getType::Type.VIDE) || (old.b::getType == Type.VIDE && old.b::getPowerUp != PowerUpType.RIEN => B::getPowerUpType == PowerUpType.RIEN) 
+	//post : (old.b::getType == Type.MURBRIQUE => b.getType::Type.VIDE) || (old.b::getType == Type.VIDE && old.b::getPowerUp != PowerUpType.RIEN => B::getType == PowerUpType.RIEN) 
 
 	//post : Pour tout vil in getVilains
 	//post : Pour tout perso in getListeJoueurs()
@@ -319,14 +336,20 @@ public interface MoteurJeuService {
 	//post:  (vil::getCommande == Commande.DROITE && (BlocService::getBloc(old.vil::getX() + 1,old.vil::getY()).getType==BlocType.MURBRIQUE) And vil::getType == Type.FANTOMEBLEU) => vil::getX() = min (old.vil::getX(M) + 1,Terrain::getNombreColonnes)
 	
 	//post : Pour tout vil in getVilains
-	//post:  (vil::getCommande == Commande.GAUCHE && (BlocService::getBloc(old.vil::getX() - 1,old.vil::getY()).getType==BlocType.MURBRIQUE) And vil::getType == Type.FANTOMEBLEU)=> vil::getX() = max (old.vil::getX(M) - 1,1)
+	//post:  (vil::getCommande == Commande.GAUCHE && (BlocService::getBloc(old.vil::getX() - 1,old.vil::getY()).getType==BlocType.VIDE)) => vil::getX() = max (old.vil::getX(M) - 1,1)
 	
 	//post : Pour tout vil in getVilains
-	//post:  (vil::getCommande == Commande.BAS && (BlocService::getBloc(old.vil::getX(),old.vil::getY() + 1).getType==BlocType.MURBRIQUE) And vil::getType == Type.FANTOMEBLEU) => vil::getY() = min (old.vil::getY(M) + 1,Terrain::getNombreLignes)
+	//post:  (vil::getCommande == Commande.BAS && (BlocService::getBloc(old.vil::getX(),old.vil::getY() + 1).getType==BlocType.VIDE)) => vil::getY() = min (old.vil::getY(M) + 1,Terrain::getNombreLignes)
 	
 	//post:  Pour tout vil in getVilains()
-	//post:  if vil::getCommande == Commande.HAUT && (BlocService::getBloc(old.vil::getX(),perso::old.getY()).getType==BlocType.MURBRIQUE) And vil::getType == Type.FANTOMEBLEU)=> vil::getY() = max (old.vil::getY(M) - 1,1)
+	//post:  if vil::getCommande == Commande.HAUT && (BlocService::getBloc(old.vil::getX(),perso::old.getY()).getType==BlocType.VIDE) => vil::getY() = max (old.vil::getY(M) - 1,1)
 
+
+
+	//VILAINS deplacement, meurent avec bombes
+	
+	//Plus deux PowerUP WallPass
+	//Vilain croise heros au dessus d'un mur en brique
 	public void pasJeu(); 
 	
 	

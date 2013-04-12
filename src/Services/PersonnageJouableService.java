@@ -82,7 +82,7 @@ public interface PersonnageJouableService extends PersonnageService {
 	 * @inv \(getCompteurFireUp(P) \ge 0 \) 
 	 */
 	
-	public int getCompteurFireUp();
+	public int getCompteurFireSuit();
 	
 	
 	/**
@@ -93,6 +93,6 @@ public interface PersonnageJouableService extends PersonnageService {
 	 * @pre \( c \ge 0 \)
 	 * @post \( getCompteurFireUp(setCompteurFireUp(P,c)) == c \)
 	 */
-	public void setCompteurFireUp(int c);
+	public void setCompteurFireSuit(int c);
 	
 }

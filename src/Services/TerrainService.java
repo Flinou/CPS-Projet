@@ -1,4 +1,5 @@
 package Services;
+import Implementation.Terrain;
 
 /**
  * 
@@ -70,5 +71,7 @@ public interface TerrainService {
 	 * @post getBloc(setBloc(T,b,i,j),i,j)==b
 	 */
 	public void setBloc(BlocService b, int i, int j);
+	
+	public Terrain clone(); 
 	
 }

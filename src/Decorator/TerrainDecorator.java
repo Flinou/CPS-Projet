@@ -1,9 +1,10 @@
 package Decorator;
 
 import Services.BlocService;
+import Implementation.Terrain;
 import Services.TerrainService;
 
-public class TerrainDecorator implements TerrainService {
+public class TerrainDecorator implements TerrainService, Cloneable {
 	
 	public TerrainDecorator(TerrainService delegate) {
 		this.delegate = delegate;
@@ -34,6 +35,10 @@ public class TerrainDecorator implements TerrainService {
 	@Override
 	public void setBloc(BlocService b, int i, int j) {
 		delegate.setBloc(b, i, j);
+	}
+	
+	public Terrain clone(){
+		return delegate.clone();
 	}
 
 }

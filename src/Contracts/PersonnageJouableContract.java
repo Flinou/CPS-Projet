@@ -24,8 +24,8 @@ public class PersonnageJouableContract extends PersonnageJouableDecorator {
 			throw new InvariantError("3 <= getForceVitale(P) <= 11");
 		if(!(super.getNbBombes()>=0))
 			throw new InvariantError("getNbBombes(P)>=0");
-		if(!(super.getCompteurFireUp()>=0))
-			throw new InvariantError("getCompteurFireUp(P)>=0");
+		if(!(super.getCompteurFireSuit()>=0))
+			throw new InvariantError("getCompteurFireSuit(P)>=0");
 	}
 	
 	public void init(int i, int j, PersonnageType v) {
@@ -42,8 +42,8 @@ public class PersonnageJouableContract extends PersonnageJouableDecorator {
 			throw new PostConditionError("getX(init(i,j,v)) == j");
 		if(!(super.getSante() == Sante.VIVANT))
 			throw new PostConditionError("getSante(init(i,j,v)) == Sante::VIVANT");
-		if(!(super.getCompteurFireUp() == 0))
-			throw new PostConditionError("getCompteurFireUp(init(i,j,v)) == 0");
+		if(!(super.getCompteurFireSuit() == 0))
+			throw new PostConditionError("getCompteurFireSuit(init(i,j,v)) == 0");
 		if(!(super.getNbBombes() == 1))
 			throw new PostConditionError("getNbBombes(init(i,j,v)) == 1");
 	}
@@ -115,22 +115,22 @@ public class PersonnageJouableContract extends PersonnageJouableDecorator {
 	}
 
 	@Override
-	public int getCompteurFireUp() {
+	public int getCompteurFireSuit() {
 		int t;
 		checkInvvariants();
-		t=super.getCompteurFireUp();
+		t=super.getCompteurFireSuit();
 		checkInvvariants();
 		return t;
 	}
 
 	@Override
-	public void setCompteurFireUp(int c) {
+	public void setCompteurFireSuit(int c) {
 		if(!(c>=0))
 			throw new PreConditionError("c>=0");
 		checkInvvariants();
-		super.setCompteurFireUp(c);
-		if(!(super.getCompteurFireUp() == c))
-			throw new PostConditionError("getCompteurFireUp(setCompteurFireUp(P,c)) == c ");
+		super.setCompteurFireSuit(c);
+		if(!(super.getCompteurFireSuit() == c))
+			throw new PostConditionError("getCompteurFireSuit(setCompteurFireSuit(P,c)) == c ");
 		checkInvvariants();
 	}
 

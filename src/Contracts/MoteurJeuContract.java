@@ -12,17 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import Decorator.MoteurJeuDecorator;
-import Services.BlocService;
-import Services.BlocType;
-import Services.BombeService;
-import Services.Commande;
-import Services.PersonnageJouableService;
-import Services.PowerUpType;
-import Services.Resultat;
-import Services.Sante;
-import Services.TerrainService;
-import Services.PersonnageType;
+import Services.*;
 import Error.*;
+import Implementation.Terrain;
 
 public class MoteurJeuContract extends MoteurJeuDecorator {
 	
@@ -152,28 +144,57 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		HashMap<PersonnageType, Integer> oldNbBombespersos = new HashMap();
 		HashMap<PersonnageType, Integer> oldForceVitpersos = new HashMap();
 		HashMap<PersonnageType, PowerUpType> oldPowerUppersos = new HashMap();
+		HashMap<PersonnageType, Integer> oldCompteurFireSuit = new HashMap();
+		HashMap<PersonnageType, Boolean> aFireSuit = new HashMap();
+		HashMap<PersonnageType, PowerUpType[]> oldPowerUpAutour = new HashMap();
+		HashMap<PersonnageType, BlocType[]> oldBlocTypeAutour = new HashMap();
+		HashMap<VilainService, Integer[]> oldCoordsVilains = new HashMap();
 		checkInvariant();
 		//Anciennes coordonnées, nombres de bombes, de chaques personnages
 		for (PersonnageJouableService personnage : super.getListeJoueurs()){
 			Integer[] coord = {personnage.getX(),personnage.getY()};
-			oldcoordpersos.put(personnage.getType(), coord);
-			oldNbBombespersos.put(personnage.getType(), personnage.getNbBombes());
-			oldForceVitpersos.put(personnage.getType(), personnage.getForceVitale());
-			oldPowerUppersos.put(personnage.getType(), personnage.getPowerUp());
+			TerrainService terrain = super.getTerrain();
+			PersonnageType type = personnage.getType();
+			PowerUpType[] oldPowerUp = {terrain.getBloc(personnage.getX() - 1, personnage.getY()).getPowerUpType(),terrain.getBloc(personnage.getX() + 1, personnage.getY()).getPowerUpType(),terrain.getBloc(personnage.getX(), personnage.getY() - 1).getPowerUpType(),terrain.getBloc(personnage.getX(), personnage.getY() + 1).getPowerUpType()}; 
+			oldPowerUpAutour.put(type, oldPowerUp);
+			// Tableau recuperant le type des blocs autour du joueur avant son coup (premier element : gauche du joueur, deuxieme : droite du joueur, troisieme : haut, quatrieme : bas)
+			BlocType[] oldBlocType = {terrain.getBloc(coord[0] - 1, coord[1]).getType(),terrain.getBloc(coord[0]+1,coord[1]).getType(),terrain.getBloc(coord[0],coord[1]-1).getType(),terrain.getBloc(coord[0], coord[1] + 1).getType()};
+			oldBlocTypeAutour.put(type, oldBlocType);
+			oldcoordpersos.put(type, coord);
+			oldNbBombespersos.put(type, personnage.getNbBombes());
+			oldForceVitpersos.put(type, personnage.getForceVitale());
+			oldPowerUppersos.put(type, personnage.getPowerUp());
+			oldCompteurFireSuit.put(type, personnage.getCompteurFireSuit());
+			if (personnage.getPowerUp() == PowerUpType.FIRESUIT){
+				aFireSuit.put(type, true);
+			} else {
+				aFireSuit.put(type, false);
+			}
 		}
 		
+		for(VilainService vil : super.getVilains()){
+			Integer[] coor = {vil.getX(),vil.getY()};
+			oldCoordsVilains.put(vil, coor);
+		}
+		
+		
+		HashMap<Integer[],BombeService> hashBombes = super.getHashBombes();
 		int oldpasJeuCour = super.getPasJeuCourant();
 		int oldforvitahero = super.getHerosForceVitale(); 
 		TerrainService terr = super.getTerrain();
 		boolean verifbombe = false;
-		ArrayList<Integer> tranquilles = new ArrayList<Integer>();
+		ArrayList<BombeService> tranquilles = new ArrayList<BombeService>();
+		ArrayList<BombeService> imminentes = new ArrayList<BombeService>();
 		HashMap<Integer,Integer> rebourstranquilles = new HashMap<Integer,Integer>();
+		int nbbombes = super.getNbBombes();
+		TerrainService ancienterrain = terr.clone();
 		
-		
-		for (int i=0;i<super.getBombeNumeros().size();i++){
-			if (!super.getBombe(i).vaExploser()){
-				tranquilles.add(super.getBombe(i).getNumero());
-				rebourstranquilles.put(super.getBombe(i).getNumero(), super.getBombe(i).getCompteARebours());
+		for (BombeService bombe : super.getBombes()){
+			if (!bombe.vaExploser()){
+				tranquilles.add(bombe);
+				rebourstranquilles.put(bombe.getNumero(), bombe.getCompteARebours());
+			} else {
+				imminentes.add(bombe);
 			}
 		}
 		//pre : !estFini()
@@ -187,60 +208,164 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		checkInvariant();
 		
 		for (PersonnageJouableService perso : super.getListeJoueurs()){
-			
-			if (perso.getCommande() == Commande.DROITE && (super.getTerrain().getBloc(perso.getX() + 1, perso.getY()).getType() != BlocType.VIDE) && perso.getX() != oldcoordpersos.get(perso.getType())[0]){
+			PersonnageType type = perso.getType();
+			int ancienx = oldcoordpersos.get(type)[0];
+			int ancieny = oldcoordpersos.get(type)[1];
+			if (super.getTerrain().getBloc(perso.getX(),perso.getY()).getType() != BlocType.VIDE){
+				throw new PostConditionError("Personnage sur une case non vide");
+			}
+			if (perso.getCommande() == Commande.DROITE && (super.getTerrain().getBloc(ancienx + 1, ancieny).getType() != BlocType.VIDE) && perso.getX() != ancienx){
 				throw new PostConditionError("Incoherence abscisse personnage");
 			}
-			if (perso.getCommande() == Commande.GAUCHE && (super.getTerrain().getBloc(perso.getX() - 1, perso.getY()).getType() != BlocType.VIDE) && perso.getX() != oldcoordpersos.get(perso.getType())[0]){
+			if (perso.getCommande() == Commande.GAUCHE && (super.getTerrain().getBloc(ancienx - 1, ancieny).getType() != BlocType.VIDE) && perso.getX() != ancienx){
 				throw new PostConditionError("Incoherence abscisse personnage");
 			}
-			if (perso.getCommande() == Commande.HAUT && (super.getTerrain().getBloc(perso.getX(), perso.getY()-1).getType() != BlocType.VIDE) && perso.getY() != oldcoordpersos.get(perso.getType())[1]){
+			if (perso.getCommande() == Commande.HAUT && (super.getTerrain().getBloc(ancienx, ancieny-1).getType() != BlocType.VIDE) && perso.getY() != ancieny){
 				throw new PostConditionError("Incoherence ordonnée personnage");
 			}
-			if (perso.getCommande() == Commande.BAS && (super.getTerrain().getBloc(perso.getX(), perso.getY()+1).getType() != BlocType.VIDE) && perso.getY() != oldcoordpersos.get(perso.getType())[1]){
+			if (perso.getCommande() == Commande.BAS && (super.getTerrain().getBloc(ancienx, ancieny+1).getType() != BlocType.VIDE) && perso.getY() != ancieny){
 				throw new PostConditionError("Incoherence ordonnée personnage");
 			}
-			if (perso.getCommande() == Commande.DROITE && (super.getTerrain().getBloc(perso.getX() + 1, perso.getY()).getType() == BlocType.VIDE) && perso.getX() != Math.min(1 + oldcoordpersos.get(perso.getType())[0],super.getTerrain().getNombreColonnes())){
+			if (perso.getCommande() == Commande.DROITE && (super.getTerrain().getBloc(ancienx + 1, ancieny).getType() == BlocType.VIDE) && perso.getX() != Math.min(1 + ancienx,super.getTerrain().getNombreColonnes() - 2)){
 				throw new PostConditionError("Incoherence abscisse personnage");
 			}
-			if (perso.getCommande() == Commande.GAUCHE && (super.getTerrain().getBloc(perso.getX() - 1, perso.getY()).getType() == BlocType.VIDE) && perso.getX() != Math.max(oldcoordpersos.get(perso.getType())[0] - 1,1)){
+			if (perso.getCommande() == Commande.GAUCHE && (super.getTerrain().getBloc(ancienx - 1, ancieny).getType() == BlocType.VIDE) && perso.getX() != Math.max(ancienx - 2,2)){
 				throw new PostConditionError("Incoherence abscisse personnage");
 			}
-			if (perso.getCommande() == Commande.HAUT && (super.getTerrain().getBloc(perso.getX(), perso.getY()-1).getType() == BlocType.VIDE) && perso.getY() != Math.max(oldcoordpersos.get(perso.getType())[1] - 1,1)){
+			if (perso.getCommande() == Commande.HAUT && (super.getTerrain().getBloc(ancienx, ancieny-1).getType() == BlocType.VIDE) && perso.getY() != Math.max(ancieny - 2,2)){
 				throw new PostConditionError("Incoherence ordonnée personnage");
 			}
-			if (perso.getCommande() == Commande.BAS && (super.getTerrain().getBloc(perso.getX(), perso.getY()+1).getType() == BlocType.VIDE) && perso.getY() != Math.min(oldcoordpersos.get(perso.getType())[1] + 1 ,super.getTerrain().getNombreLignes())){
+			if (perso.getCommande() == Commande.BAS && (super.getTerrain().getBloc(ancienx, ancieny+1).getType() == BlocType.VIDE) && perso.getY() != Math.min(ancieny + 1 ,super.getTerrain().getNombreLignes() - 2)){
 				throw new PostConditionError("Incoherence ordonnée personnage");
 			}
-			if(perso.getCommande() != Commande.BAS && perso.getCommande() != Commande.HAUT && oldcoordpersos.get(perso.getType())[1] != perso.getY()){
+			if(perso.getCommande() != Commande.BAS && perso.getCommande() != Commande.HAUT && ancieny != perso.getY()){
 				throw new PostConditionError("Incoherence ordonnée personnage");
 			}
-			if(perso.getCommande() != Commande.DROITE && perso.getCommande() != Commande.GAUCHE && oldcoordpersos.get(perso.getType())[0] != perso.getX()){
+			if(perso.getCommande() != Commande.DROITE && perso.getCommande() != Commande.GAUCHE && ancienx != perso.getX()){
 				throw new PostConditionError("Incoherence abscisse personnage");
 			}
-			if(terr.getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.BOMBUP && oldNbBombespersos.get(perso.getType()) + 1 != perso.getNbBombes()){
+			if (ancienterrain.getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.BOMBUP && oldNbBombespersos.get(perso.getType()) + 1 != perso.getNbBombes()){
 				throw new PostConditionError("PowerUp BombUp non appliqué");
 			}
-			if(terr.getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.FIREUP && oldForceVitpersos.get(perso.getType()) != 11 && oldForceVitpersos.get(perso.getType()) + 2 != perso.getForceVitale()){
+			if(ancienterrain.getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.FIREUP && oldForceVitpersos.get(perso.getType()) != 11 && oldForceVitpersos.get(perso.getType()) + 2 != perso.getForceVitale()){
 				throw new PostConditionError("PowerUp FireUp non appliqué");
 			}
-			if(terr.getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.FIREUP && oldForceVitpersos.get(perso.getType()) == 11 && oldForceVitpersos.get(perso.getType()) + 2 != perso.getForceVitale()){
-				throw new PostConditionError("PowerUp FireUp appliqué mais depassant 11");
+			if(ancienterrain.getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.FIREUP && oldForceVitpersos.get(perso.getType()) == 11 && oldForceVitpersos.get(perso.getType()) + 2 == perso.getForceVitale()){
+				throw new PostConditionError("PowerUp FireUp appliqué mais dépassant 11");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && terr.getBloc(perso.getX() + 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  terr.getBloc(perso.getX() + 2, perso.getY()).getType() == BlocType.VIDE && perso.getCommande() == Commande.DROITE && oldcoordpersos.get(perso.getType())[0] + 2 != perso.getX()){
+			
+			int[] coords = {perso.getX(),perso.getY()};
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX() - 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.DROITE && ancienx + 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && terr.getBloc(perso.getX() - 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  terr.getBloc(perso.getX() - 2, perso.getY()).getType() == BlocType.VIDE && perso.getCommande() == Commande.DROITE && oldcoordpersos.get(perso.getType())[0] - 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX() + 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.GAUCHE && ancienx - 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && terr.getBloc(perso.getX(), perso.getY() - 1).getType() == BlocType.MURBRIQUE &&  terr.getBloc(perso.getX(), perso.getY() - 2).getType() == BlocType.VIDE && perso.getCommande() == Commande.HAUT && oldcoordpersos.get(perso.getType())[1] - 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX(), perso.getY() + 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.HAUT && ancieny - 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && terr.getBloc(perso.getX(), perso.getY() + 1).getType() == BlocType.MURBRIQUE &&  terr.getBloc(perso.getX() - 2, perso.getY() + 2).getType() == BlocType.VIDE && perso.getCommande() == Commande.BAS && oldcoordpersos.get(perso.getType())[1] + 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terr.getBloc(perso.getX(), perso.getY() - 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.BAS && ancieny + 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-		}
+			if (hashBombes.get(coords) != null && perso.getPowerUp() != PowerUpType.BOMBPASS){
+				throw new PostConditionError("Sur une bombe sans BOMBPASS");
+			}
+			if(super.getTerrain().getBloc(perso.getX(), perso.getY()).getType() != BlocType.VIDE){
+				throw new PostConditionError("Personnage sur une case non vide");
+			}
+			if(aFireSuit.get(perso.getType()) == true && oldCompteurFireSuit.get(perso.getType()) -1  != perso.getCompteurFireSuit()){
+				throw new PostConditionError("Compteur Fire Suite non décrémenté");
+			}
+			
+			PowerUpType tresor = ancienterrain.getBloc(perso.getX(), perso.getY()).getPowerUpType(); 
+			if (tresor != PowerUpType.RIEN &&  perso.getPowerUp()!=tresor ){
+				throw new PostConditionError("Power Up non recupéré");
+			}
+			if (perso.getCommande() == Commande.BOMBE && hashBombes.get(coords) == null){
+				throw new PostConditionError("Bombe non crée aux coordonnées du joueur");
+			}
+			if (perso.getCommande() == Commande.BOMBE && hashBombes.get(coords).getNumero() != super.getNbBombes() + 1){
+				throw new PostConditionError("Bombe crée n'a pas le bon numéro");
+			}
+			if (perso.getCommande() == Commande.BOMBE && hashBombes.get(coords).getAmplitude() != perso.getForceVitale()){
+				throw new PostConditionError("Bombe crée n'a pas la bonne amplitude");
+			}
+			if (perso.getCommande() == Commande.BOMBE && (ancienx != perso.getX() || ancieny != perso.getY())){
+				throw new PostConditionError("Joueur a crée une bombe mais s'est déplacé");
+			}
+			for (BombeService bombe : super.getBombes()){
+			if (super.misEnJoue(ancienx,ancieny,bombe.getNumero()) && perso.getPowerUp() != PowerUpType.FIRESUIT && perso.getSante() != Sante.MORT){
+				throw new PostConditionError("Joueur non mort alors que la bombe a explosé");
+			
+				}
+			}
+			for (BombeService bombetranquille : tranquilles){
+				if (bombetranquille.getCompteARebours() != rebourstranquilles.get(bombetranquille.getNumero())-1){
+					throw new PostConditionError("Compte a rebours des bombes non mis à jour");
+				}
+			}
+			for (BombeService bombeimmin : imminentes){
+			for (int j = 1; j<terr.getNombreColonnes() -2 ;j++){
+				for (int i = 1; i<terr.getNombreLignes() - 2; i++){
+					if (((super.misEnJoue(i, j, bombeimmin.getNumero()) && ancienterrain.getBloc(i, j).getType() == BlocType.MURBRIQUE && terr.getBloc(i, j).getType() != BlocType.VIDE) || (super.misEnJoue(i, j, bombeimmin.getNumero()) && ancienterrain.getBloc(i, j).getType() == BlocType.VIDE && ancienterrain.getBloc(i, j).getPowerUpType() != PowerUpType.RIEN && terr.getBloc(i, j).getPowerUpType() != PowerUpType.RIEN))){
+						throw new PostConditionError("Explosion de bombe n'a pas détruit un mur ou alors un tresor");
+					}
+				}
+			}
+			}
+			PersonnageJouableService autreJoueur;
+			if (perso == super.getHeros()){
+				autreJoueur = super.getKidnappeur();
+			}else{
+				autreJoueur = super.getHeros();
+			}
+			
+			if(perso.getCommande() == Commande.BOMBE && autreJoueur.getCommande() != Commande.BOMBE && super.getNbBombes() != tranquilles.size() + 1){
+				throw new PostConditionError("Incohérence entre le nombre de bombes après en avoir posé une");
+			}
+			if(perso.getCommande() == Commande.BOMBE && autreJoueur.getCommande() == Commande.BOMBE && super.getNbBombes() != tranquilles.size() + 2){
+				throw new PostConditionError("Incohérence entre le nombre de bombes après que les deux joueurs en aient posé une");
+			}
+			if(perso.getCommande() != Commande.BOMBE && autreJoueur.getCommande() != Commande.BOMBE && super.getNbBombes() != tranquilles.size()){
+				throw new PostConditionError("Incohérence entre le nombre de bombes après en avoir posé une");
+			}
+			for(VilainService vil : super.getVilains()){
+				int oldvilainx = oldCoordsVilains.get(vil)[0];
+				int oldvilainy = oldCoordsVilains.get(vil)[1];
+				if ((ancienx == vil.getX() && ancieny == vil.getY() && oldvilainx == perso.getX() && oldvilainy == perso.getY() && perso.getSante() != Sante.MORT) ||(vil.getX() == perso.getX() && vil.getY()==perso.getY())){
+					throw new PostConditionError("Perso non mort alors qu'il a croisé un vilain");
+				}
+				if (vil.getCommande() == Commande.DROITE && (super.getTerrain().getBloc(oldvilainx + 1, oldvilainy).getType() == BlocType.VIDE) && vil.getX() != Math.min(1 + oldvilainx,super.getTerrain().getNombreColonnes() - 2)){
+					throw new PostConditionError("Incoherence abscisse personnage");
+				}
+				if (vil.getCommande() == Commande.GAUCHE && (super.getTerrain().getBloc(oldvilainx - 1, oldvilainy).getType() == BlocType.VIDE) && vil.getX() != Math.max(oldvilainx - 1,2)){
+					throw new PostConditionError("Incoherence abscisse personnage");
+				}
+				if (vil.getCommande() == Commande.HAUT && (super.getTerrain().getBloc(oldvilainx, oldvilainy-1).getType() == BlocType.VIDE) && vil.getY() != Math.max(oldvilainy - 2,2)){
+					throw new PostConditionError("Incoherence ordonnée personnage");
+				}
+				if (vil.getCommande() == Commande.BAS && (super.getTerrain().getBloc(oldvilainx, oldvilainy+1).getType() == BlocType.VIDE) && vil.getY() != Math.min(oldvilainy + 1 ,super.getTerrain().getNombreLignes() - 2)){
+					throw new PostConditionError("Incoherence ordonnée personnage");
+				}
+				//Fantome bleu
+				if (vil.getCommande() == Commande.DROITE && (super.getTerrain().getBloc(oldvilainx + 1, oldvilainy).getType() != BlocType.MURMETAL) && vil.getType() == VilainType.FANTOMEBLEU && vil.getX() != Math.min(1 + oldvilainx,super.getTerrain().getNombreColonnes() - 2)){
+					throw new PostConditionError("Incoherence abscisse personnage");
+				}
+				if (vil.getCommande() == Commande.GAUCHE && (super.getTerrain().getBloc(oldvilainx - 1, oldvilainy).getType() != BlocType.MURMETAL) && vil.getType() == VilainType.FANTOMEBLEU && vil.getX() != Math.max(oldvilainx - 1,2)){
+					throw new PostConditionError("Incoherence abscisse personnage");
+				}
+				if (vil.getCommande() == Commande.HAUT && (super.getTerrain().getBloc(oldvilainx, oldvilainy-1).getType() != BlocType.MURMETAL) && vil.getType() == VilainType.FANTOMEBLEU && vil.getY() != Math.max(oldvilainy - 2,2)){
+					throw new PostConditionError("Incoherence ordonnée personnage");
+				}
+				if (vil.getCommande() == Commande.BAS && (super.getTerrain().getBloc(oldvilainx, oldvilainy+1).getType() != BlocType.MURMETAL)&& vil.getType() == VilainType.FANTOMEBLEU  && vil.getY() != Math.min(oldvilainy + 1 ,super.getTerrain().getNombreLignes() - 2)){
+					throw new PostConditionError("Incoherence ordonnée personnage");
+				}
+				
+			}
+			
+			
 	}
+}
 }
 		
 		

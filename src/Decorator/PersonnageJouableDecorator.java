@@ -52,14 +52,15 @@ public class PersonnageJouableDecorator extends PersonnageDecorator implements P
 		return delegate.getPowerUp();
 	}
 
+
 	@Override
-	public int getCompteurFireUp() {
-		return delegate.getCompteurFireUp();
+	public int getCompteurFireSuit() {
+		return delegate.getCompteurFireSuit();
 	}
 
 	@Override
-	public void setCompteurFireUp(int c) {
-		delegate.setCompteurFireUp(c);
+	public void setCompteurFireSuit(int c) {
+		delegate.setCompteurFireSuit(c);
 	}
 
 

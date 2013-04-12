@@ -10,6 +10,7 @@ import Services.PersonnageJouableService;
 import Services.Resultat;
 import Services.Sante;
 import Services.TerrainService;
+import Services.VilainService;
 
 public class MoteurJeuDecorator implements MoteurJeuService {
 	private MoteurJeuService delegates;
@@ -122,6 +123,11 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 	@Override
 	public PersonnageJouableService getKidnappeur() {
 		return delegates.getKidnappeur();
+	}
+
+	@Override
+	public ArrayList<VilainService> getVilains() {
+		return delegates.getVilains();
 	}
 
 }

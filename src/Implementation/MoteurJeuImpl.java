@@ -243,4 +243,10 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public ArrayList<VilainService> getVilains() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	}
