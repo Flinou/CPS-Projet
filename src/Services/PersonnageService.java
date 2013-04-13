@@ -71,4 +71,7 @@ public interface PersonnageService {
 	 * 		<br \>getX(setY(T,y)) == getX(T)
 	 */
 	public void setY(int y);
+	
+	
+	public void setCommande();
 }

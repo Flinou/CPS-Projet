@@ -52,4 +52,9 @@ public class PersonnageDecorator implements PersonnageService {
 		delegate.setY(y);
 	}
 
+	@Override
+	public void setCommande() {
+		delegate.setCommande();
+	}
+
 }

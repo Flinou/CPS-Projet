@@ -67,4 +67,10 @@ public class VilainImpl implements VilainService {
 		return null;
 	}
 
+	@Override
+	public void setCommande() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

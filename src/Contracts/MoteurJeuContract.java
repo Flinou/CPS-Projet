@@ -132,20 +132,34 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (super.getBombes() != null){
 			throw new PostConditionError("Liste de Bombes non nulle après l'init");
 		}
-		
-		for (PersonnageJouableService perso : getListeJoueurs()){
-		if (perso.getX() != 2){
+		if (super.getTerrain().getBloc(6, 6).getType() != BlocType.VIDE){
+			throw new PostConditionError("Case d'apparition des vilains non vide");
+		}
+		if (super.getHeros().getX() != 2){
 			throw new PostConditionError("L'abscisse du heros apres l'initialisation n'est pas egal a deux");
 		}
-		if (perso.getY() != 2){
+		if (super.getHeros().getY() != 2){
 			throw new PostConditionError("L'ordonnee du heros apres l'initialisation n'est pas egal a deux");
 		}
+		if (super.getKidnappeur().getX() != 10){
+			throw new PostConditionError("L'abscisse du kidnappeur apres l'initialisation n'est pas egal a deux");
+		}
+		if (super.getKidnappeur().getY() != 10){
+			throw new PostConditionError("L'ordonnee du kidnappeur apres l'initialisation n'est pas egal a deux");
+		}
+		
+		for (PersonnageJouableService perso : getListeJoueurs()){
 		if (perso.getSante() != Sante.VIVANT){
 			throw new PostConditionError("La Sante du heros est different de Vivant apres l'init");
 		}
 		if (perso.getForceVitale() != 3){
 			throw new PostConditionError("La force vitale du heros est different de trois après l'initialisation");
 		}
+		}
+		for (VilainService vil : getVilains()){
+			if (vil.getX() != 6 || vil.getY() != 6){
+				throw new PostConditionError("Vilain non apparu en 6,6");
+			}
 		}
 		checkInvariant();
 

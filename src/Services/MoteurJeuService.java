@@ -310,7 +310,9 @@ public interface MoteurJeuService {
 	*@post:  Pour tout vil in getVilains()
 	*@post:  if vil::getCommande == Commande.HAUT && (BlocService::getBloc(old.vil::getX(),perso::old.getY()).getType==BlocType.MURBRIQUE) And vil::getType == Type.FANTOMEBLEU)=> vil::getY() = max (old.vil::getY(M) - 1,1)
 	*/
-	public void pasJeu(); 
+	public void pasJeu();
+	
+	public MoteurJeuService clone(); 
 	
 	
 	

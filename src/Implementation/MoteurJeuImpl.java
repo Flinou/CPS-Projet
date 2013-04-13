@@ -33,7 +33,7 @@ import Services.VilainType;
  *
  */
 public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouableService, RequireTerrainService,
-	RequireVilainService{
+	RequireVilainService, Cloneable{
 	private ArrayList<PersonnageJouableService> persos = new ArrayList<PersonnageJouableService>();
 	private ArrayList<VilainService> vilains = new ArrayList<VilainService>();
 	private PersonnageJouableService heros = new PersonnageJouableImpl();
@@ -120,8 +120,15 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 				}
 			}
 		}
-		
+		for (i=1; i<plateaujeu.getNombreLignes() - 2;i++){
+			for (j=1;j<plateau.getNombreColonnes() -2;j++){
+				if (plateaujeu.getBloc(i, j).getType() != BlocType.MURMETAL){
+					plateaujeu.getBloc(i, j).setType(BlocType.VIDE);
+				}
+			}
 	}
+}
+	
 	
 	
 	public PersonnageJouableService getHeros(){
@@ -492,5 +499,16 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	@Override
 	public ArrayList<VilainService> getVilains() {
 		return vilains;
+	}
+	
+	public MoteurJeuService clone(){
+		MoteurJeuService clone = new MoteurJeuImpl();;
+		try {
+		    clone = (MoteurJeuService) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return clone;
 	}
 	}

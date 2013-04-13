@@ -2,6 +2,7 @@ package Implementation;
 
 import java.util.Random;
 
+
 import Services.Commande;
 import Services.PersonnageService;
 import Services.Sante;
@@ -55,6 +56,11 @@ public class PersonnageImpl implements PersonnageService {
 	@Override
 	public void setY(int y) {
 		this.y = y;
+	}
+
+	@Override
+	public void setCommande() {
+		 
 	}
 
 }
