@@ -13,7 +13,11 @@ import Services.TerrainService;
 import Services.VilainService;
 
 public class MoteurJeuDecorator implements MoteurJeuService {
-	private MoteurJeuService delegates;
+	
+	public MoteurJeuDecorator(MoteurJeuService delegate){
+		this.delegates = delegate;
+	}
+	protected MoteurJeuService delegates;
 	@Override
 	public int getPasJeuCourant() {
 		return delegates.getPasJeuCourant();
@@ -48,16 +52,6 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 	@Override
 	public Sante getKidnappeurSante() {
 		return delegates.getKidnappeurSante();
-	}
-
-	@Override
-	public int getHerosForceVitale() {
-		return delegates.getHerosForceVitale();
-	}
-
-	@Override
-	public int getKidnappeurForceVitale() {
-		return delegates.getKidnappeurForceVitale();
 	}
 
 	@Override
@@ -104,11 +98,6 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 	public HashMap<Integer[], BombeService> getHashBombes() {
 		return delegates.getHashBombes();
 	}
-
-	@Override
-	public ArrayList<BombeService> getBombesImminentes() {
-		return delegates.getBombesImminentes();
-		}
 
 	@Override
 	public ArrayList<PersonnageJouableService> getListeJoueurs() {

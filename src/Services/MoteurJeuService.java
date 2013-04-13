@@ -31,7 +31,7 @@ public interface MoteurJeuService {
 	public TerrainService getTerrain();
 	
 	/**
-	 * Retourne l'ordonnee du kidnappeur.
+	 * Retourne l'ordonnée du kidnappeur.
 	 */
 	
 	public Sante getHerosSante();
@@ -55,20 +55,7 @@ public interface MoteurJeuService {
 	 */
 	
 	public PersonnageJouableService getKidnappeur();
-	
-	/**
-	 * Retourne la force vitale du heros
-	 * @return force vitale heros
-	 */
-	
-	public int getHerosForceVitale();
-	
-	/**
-	 * Retourne la force vitale du kidnappeur
-	 * @return force vitale kidnappeur
-	 */
-	
-	public int getKidnappeurForceVitale();
+
 	
 	/**
 	 * Verifie si une bombe existe
@@ -103,12 +90,6 @@ public interface MoteurJeuService {
 	 */
 	
 	public BombeService getBombe(int num);
-
-	/**
-	 * @return la listes des bombes sur le point d'exploser
-	 */
-
-	public ArrayList<BombeService> getBombesImminentes();
 
 	/**
 	 * @return la liste des personnages jouables
@@ -302,7 +283,7 @@ public interface MoteurJeuService {
 
 	*@post : Pour tout vil in getVilains
 	*@post : Pour tout perso in getListeJoueurs()
-	*@psot : (old.perso::getX() == vil::getX() And old.perso::getY() == vil::getY() And perso::getX() == old.vil::getX() And perso::getY() == old.vil::getY() || (perso::getX()==vil::getX() And perso::getY()==vil::getY())) => perso::getSante = SANTE.MORT 
+	*@post : (old.perso::getX() == vil::getX() And old.perso::getY() == vil::getY() And perso::getX() == old.vil::getX() And perso::getY() == old.vil::getY() || (perso::getX()==vil::getX() And perso::getY()==vil::getY())) => perso::getSante = SANTE.MORT 
 	
 	*@post : Pour tout vil in getVilains
 	*@post:  (vil::getCommande == Commande.DROITE && (BlocService::getBloc(old.vil::getX() + 1,old.vil::getY()).getType==BlocType.VIDE)) => vil::getX() = min (old.vil::getX(M) + 1,Terrain::getNombreColonnes)

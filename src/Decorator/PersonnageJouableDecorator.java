@@ -63,5 +63,11 @@ public class PersonnageJouableDecorator extends PersonnageDecorator implements P
 		delegate.setCompteurFireSuit(c);
 	}
 
+	@Override
+	public void setPowerUp(PowerUpType pouvoir) {
+		delegate.setPowerUp(pouvoir);
+		
+	}
+
 
 }

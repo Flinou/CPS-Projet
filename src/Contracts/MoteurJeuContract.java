@@ -18,11 +18,35 @@ import Error.*;
 
 public class MoteurJeuContract extends MoteurJeuDecorator {
 	
+	public MoteurJeuContract(MoteurJeuService delegate) {
+		super(delegate);
+	}
 	public void checkInvariant(){
 		TerrainService terrain = super.getTerrain();
-		PersonnageJouableService heros = super.getHeros();
-		int x = heros.getX();
-		int y = heros.getY();
+		for (PersonnageJouableService perso : super.getListeJoueurs()){
+		int x = perso.getX();
+		int y = perso.getY();
+		
+		if (x < 1 || x > super.getTerrain().getNombreColonnes() - 2){
+			throw new InvariantError ("L'abscisse du heros est hors du plateau de jeu");
+		}
+		if (y < 1 || y > super.getTerrain().getNombreLignes() - 2){
+			throw new InvariantError ("L'ordonnee du heros est hors du plateau de jeu");
+		}
+		if (perso.getForceVitale() < 3 || perso.getForceVitale() > 11){
+			throw new InvariantError ("Force Vitale non valide");
+		}
+		for (Integer num : super.getBombeNumeros()){
+			if (super.misEnJoue(x,y,num)){
+				int xB = super.getBombe(num).getX();
+				int yB = super.getBombe(num).getY();
+				int aB = super.getBombe(num).getAmplitude();
+				if ((x==xB && Math.abs(y-yB) > aB) && (y==yB && Math.abs(x-xB) > aB)){
+					throw new InvariantError("Erreur Mis en joue vrai alors que joueur hors de portee");
+				}
+			}
+			}
+		}
 		int i = 0;
 		//Verification que les bords sont des murs metalliques
 		for (int j=0;j<terrain.getNombreColonnes()-1;j++){
@@ -51,15 +75,6 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		}
 		if (super.getPasJeuCourant() < 1 || super.getPasJeuCourant()>super.getMaxPasJeu()){
 			throw new InvariantError ("Le pas de jeu courant n'est pas compris entre 1 et le maximum possible.");
-		}
-		if (x < 1 || x > super.getTerrain().getNombreColonnes()){
-			throw new InvariantError ("L'abscisse du heros est hors du plateau de jeu");
-		}
-		if (y < 1 || y > super.getTerrain().getNombreLignes()){
-			throw new InvariantError ("L'ordonnee du heros est hors du plateau de jeu");
-		}
-		if (super.getHerosForceVitale() < 3 || super.getHerosForceVitale() > 11){
-			throw new InvariantError ("Force Vitale non valide");
 		}
 		if (super.getPasJeuCourant() < 1 || super.getPasJeuCourant()>super.getMaxPasJeu()){
 			throw new InvariantError ("Le pas de jeu courant n'est pas compris entre 1 et le maximum possible.");
@@ -93,16 +108,6 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (super.resultatFinal() == Resultat.PARTIENULLE && super.getHerosSante() != Sante.VIVANT){
 			throw new InvariantError("Resultat final pour la partie nulle imprevue");
 		}
-		for (Integer num : super.getBombeNumeros()){
-		if (super.misEnJoue(x,y,num)){
-			int xB = super.getBombe(num).getX();
-			int yB = super.getBombe(num).getY();
-			int aB = super.getBombe(num).getAmplitude();
-			if ((x==xB && Math.abs(y-yB) > aB) && (y==yB && Math.abs(x-xB) > aB)){
-				throw new InvariantError("Erreur Mis en joue vrai alors que joueur hors de portee");
-			}
-		}
-		}
 	
 	}
 	public void init(int maxPasJeu){
@@ -118,26 +123,29 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 		if (super.getPasJeuCourant() != 0){
 			throw new PostConditionError("Le pas de jeu courant apres init n'est pas egal a 0");
 		}
-		if (super.getHeros().getX() != 2){
-			throw new PostConditionError("L'abscisse du heros apres l'initialisation n'est pas egal a deux");
-		}
-		if (super.getHeros().getX() != 2){
-			throw new PostConditionError("L'ordonnee du heros apres l'initialisation n'est pas egal a deux");
-		}
-		if (super.getHerosSante() != Sante.VIVANT){
-			throw new PostConditionError("La Sante du heros est different de Vivant apres l'init");
-		}
-		if (super.getHerosForceVitale() != 3){
-			throw new PostConditionError("La force vitale du heros est different de trois après l'initialisation");
-		}
 		if (super.getTerrain().getNombreColonnes() != 15){
 			throw new PostConditionError("Le nombre de colonnes du terrain apres l'init n'est pas egal a 15");
 		}
 		if (super.getTerrain().getNombreLignes() != 13){
 			throw new PostConditionError("Le nombre de lignes du terrain apres l'init n'est pas egal a 13");
 		}
-		if (super.getBombeNumeros() != null){
+		if (super.getBombes() != null){
 			throw new PostConditionError("Liste de Bombes non nulle après l'init");
+		}
+		
+		for (PersonnageJouableService perso : getListeJoueurs()){
+		if (perso.getX() != 2){
+			throw new PostConditionError("L'abscisse du heros apres l'initialisation n'est pas egal a deux");
+		}
+		if (perso.getY() != 2){
+			throw new PostConditionError("L'ordonnee du heros apres l'initialisation n'est pas egal a deux");
+		}
+		if (perso.getSante() != Sante.VIVANT){
+			throw new PostConditionError("La Sante du heros est different de Vivant apres l'init");
+		}
+		if (perso.getForceVitale() != 3){
+			throw new PostConditionError("La force vitale du heros est different de trois après l'initialisation");
+		}
 		}
 		checkInvariant();
 
@@ -153,7 +161,7 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 	public Resultat resultatFinal(){
 		//pre : estFini()
 		if (!super.estFini()){
-			throw new PreConditionError("La partie n'est pas finie");
+			throw new PreConditionError("La partie n'est pas finie donc pas de resultat");
 		}
 		return super.resultatFinal();
 	}
@@ -406,76 +414,3 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 	}
 }
 }
-		
-		
-		
-		/*if (super.getPasJeuCourant() != pasJeuCour + 1){
-			throw new PostConditionError("Incoherence entre le nombre de pas de jeu avant et apres pasJeu");
-		}
-		int x = super.getHeros().getX();
-		int y = super.getHeros().getY();
-		switch (com){
-		case GAUCHE :
-			if ((super.getHerosX() != Math.max(1, abscishero - 1)) || (super.getHerosY() != ordonnehero)){
-				throw new PostConditionError("Erreur valeur coordonnees heros apres pasJeu");
-			}
-			if (super.getNbBombes() != tranquilles.size()){
-				throw new PostConditionError("Incoherence Nb bombes et taille tranquilles");
-			}
-		case DROITE :
-			if (super.getHerosX() != Math.min(super.getTerrain().getNombreColonnes(), abscishero + 1) || (super.getHerosY() != ordonnehero)){
-				throw new PostConditionError("Erreur valeur coordonnes heros apres pasJeu");
-			}
-			if (super.getNbBombes() != tranquilles.size()){
-				throw new PostConditionError("Incoherence Nb bombes et taille tranquilles");
-			}
-		case HAUT :
-			if (super.getHerosX() != Math.max(super.getTerrain().getNombreColonnes(), ordonnehero - 1) || (super.getHerosX() != abscishero)){
-				throw new PostConditionError("Erreur valeur coordonnees heros apres pasJeu");
-			}
-			if (super.getNbBombes() != tranquilles.size()){
-				throw new PostConditionError("Incoherence Nb bombes et taille tranquilles");
-			}
-		case BAS :
-			if (super.getHerosX() != Math.min(super.getTerrain().getNombreColonnes(), ordonnehero + 1)|| (super.getHerosX() != abscishero)){
-				throw new PostConditionError("Erreur valeur coordonnees heros apres pasJeu");
-			}
-			if (super.getNbBombes() != tranquilles.size()){
-				throw new PostConditionError("Incoherence Nb bombes et taille tranquilles");
-			}
-		case BOMBE :
-			for (int i=0;i<super.getBombeNumeros().size();i++){
-				if ((super.getBombe(i).getX() == abscishero) && (super.getBombe(i).getY() == ordonnehero) && (super.getBombe(i).getAmplitude() == super.getHerosForceVitale())){
-					verifbombe = true;
-					break;
-				}
-			}
-			if (!verifbombe){
-				throw new PostConditionError("Bombe non cree apres PasJeu");
-			}
-			if (super.getNbBombes() != tranquilles.size() + 1){
-				throw new PostConditionError("Incoherence nb bombes avec tranquilles");
-			}
-		}
-		
-		if (forvitahero != super.getHerosForceVitale()){
-			throw new PostConditionError("Incoherence force vitale heros dans PasJeu");
-		}
-		if (terr != super.getTerrain()){
-			throw new PostConditionError("Incoherence Terrain dans PasJeu");
-		}
-		if (!super.getBombeNumeros().contains(tranquilles)){
-			throw new PostConditionError("Tranquilles n'est pas compris dans les bombes du jeu");
-		}
-		for (int i=0;i<super.getBombeNumeros().size();i++){
-			if(super.getBombe(super.getBombeNumeros().get(i)).getCompteARebours() != rebourstranquilles.get(super.getBombeNumeros().get(i)) - 1){
-				throw new PostConditionError("Incoherences dans les comptes a rebours");
-			}
-		
-		
-	}
-	
-	
-	}
-}
-*/

@@ -68,4 +68,10 @@ public class PersonnageJouableImpl extends PersonnageImpl implements PersonnageJ
 		
 	}
 
+	@Override
+	public void setPowerUp(PowerUpType pouvoir) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

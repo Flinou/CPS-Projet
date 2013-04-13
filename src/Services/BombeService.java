@@ -18,6 +18,7 @@ public interface BombeService {
 	
 	/**
 	 * Modifie le compte a rebours d'une bombe
+	 * @pre getCompteARebours() > 0
 	 * @post getCompteARebours(dimCompteArebours()) = getCompteARebours - 1
 	 */
 	public void dimCompteARebours();
@@ -41,8 +42,9 @@ public interface BombeService {
 	 * @post getCompteARebours(init(num,x,y,amplitude) = 10 
 	 */
 	public void init(int num, int x,int y, int amplitude);
-	 
-	//inv : 0 <= getCompteARebours(B) <= 10
-	//inv : (vaExploser() == true) <=> (getCompteARebours == 0) 
-
+	/** 
+	*@inv : 0 <= getCompteARebours(B) <= 10
+	*@inv : (vaExploser() == true) <=> (getCompteARebours == 0) 
+	**/
+	
 }

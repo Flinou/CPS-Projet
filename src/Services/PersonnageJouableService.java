@@ -73,6 +73,11 @@ public interface PersonnageJouableService extends PersonnageService {
 	public int getNbBombes();
 	
 	/**
+	 * Change le PowerUp porté par le heros
+	 */
+	public void setPowerUp(PowerUpType pouvoir);
+	
+	/**
 	 * @return le PowerUp porté par le Personnage
 	 */
 	public PowerUpType getPowerUp();

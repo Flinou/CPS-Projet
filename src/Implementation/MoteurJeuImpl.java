@@ -36,19 +36,14 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	RequireVilainService{
 	private ArrayList<PersonnageJouableService> persos = new ArrayList<PersonnageJouableService>();
 	private ArrayList<VilainService> vilains = new ArrayList<VilainService>();
-	private PersonnageJouableService heros;
-	private PersonnageJouableService kidnappeur;
+	private PersonnageJouableService heros = new PersonnageJouableImpl();
+	private PersonnageJouableService kidnappeur = new PersonnageJouableImpl();
 	private int pasJeuCourant;
 	private int maxiPasJeu;
 	private TerrainService plateau = new TerrainImpl();
 	private TerrainService plateaujeu;
-	private ArrayList<Integer> indexbombes;
 	private ArrayList<BombeService> bombes;
 	private HashMap<Integer[],BombeService> hashbombes;
-	private HashMap vilainscoords;
-	private BombeService bombe;
-	private int nbBombesKidnappeur;
-	private int nbBombesHeros;
 
 	@Override
 	public int getPasJeuCourant() {
@@ -66,6 +61,8 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		bindPersonnageJouableService(heros);
 		bindPersonnageJouableService(kidnappeur);
 		bindTerrainService(plateau);
+		persos.add(heros);
+		persos.add(kidnappeur);
 		plateaujeu.init(15, 13);
 		pasJeuCourant = 0;
 		maxiPasJeu = maxPasJeu;
@@ -87,18 +84,17 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		}
 		// Initialisation des coordonnees des vilains
 		for (int j=0;j<4;j++){
-			VilainService vilain = new Vilain();
+			VilainService vilain = new VilainImpl();
 			bindVilainService(vilain);
 		}
 		boolean ballonOrange = true;
 		for (VilainService vil : vilains){
-			//CHANGEMENT A FAIRE
 			if (ballonOrange){
-				vil.init((int)Math.random()*(plateaujeu.getNombreLignes()-2) + 1,(int)Math.random()*(plateaujeu.getNombreColonnes()-2) +1,VilainType.BALLONORANGE);
-			}else{
-				vil.init((int)Math.random()*(plateaujeu.getNombreLignes()-2) + 1,(int)Math.random()*(plateaujeu.getNombreColonnes()-2) +1,VilainType.FANTOMEBLEU);	
-				
-			}
+				vil.init(6,6,VilainType.BALLONORANGE);	
+			} else{
+				vil.init(6,6,VilainType.FANTOMEBLEU);
+				}
+			ballonOrange = !ballonOrange;
 		}
 		//Mise en place des murs metalliques 
 		int i = 0;
@@ -138,6 +134,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	
 	@Override
 	public void pasJeu() {
+		Integer[] coordperso = new Integer[2];
 		//Verifie si la partie est terminée
 		if (!estFini()){
 		// Explosion des bombes
@@ -204,17 +201,14 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 			int xperso = perso.getX();
 			int yperso = perso.getY();
 			PowerUpType powerup = PowerUpType.RIEN;
-			Integer[] coordperso = {perso.getX(),perso.getY()};
+			coordperso[0]=xperso;
+			coordperso[1]=yperso;
 			switch (comande){
 			case DROITE:
 				Integer [] coordsdroit = {xperso+1, yperso};
 				if (perso.getPowerUp() != PowerUpType.WALLPASS && perso.getPowerUp() != PowerUpType.BOMBPASS){
 					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.VIDE && !(hashbombes.containsKey(coordsdroit))){
 						perso.setX(xperso + 1);
-						if (plateaujeu.getBloc(xperso, yperso).getPowerUpType() != PowerUpType.RIEN){
-							powerup = plateaujeu.getBloc(xperso, yperso).getPowerUpType();
-							perso.setPowerUp(powerup);
-						}
 					}
 				}else if (perso.getPowerUp() == PowerUpType.WALLPASS){
 					if (plateaujeu.getBloc(xperso + 1, yperso).getType() == BlocType.MURBRIQUE && plateaujeu.getBloc(xperso + 2, yperso).getType() == BlocType.VIDE ){
@@ -281,6 +275,28 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 			bombes.add(bombe);
 			break;
 			}
+			//Recuperation du PowerUp présent sur la case
+			if (plateaujeu.getBloc(perso.getX(), perso.getY()).getPowerUpType() != PowerUpType.RIEN){
+				powerup = plateaujeu.getBloc(perso.getX(), perso.getY()).getPowerUpType();
+				perso.setPowerUp(powerup);
+			}
+			// Actions en fonction du powerup obtenu
+			switch (powerup){
+			case BOMBUP:
+				perso.addBombe();
+				break;
+			case FIRESUIT:
+				perso.setCompteurFireSuit(100);
+				break;
+			case FIREUP:
+				if (perso.getForceVitale() <= 9){
+					perso.setForceVitale(perso.getForceVitale() +2);
+				break;
+			}
+			}
+		}
+			
+			//Deplacement des vilains
 			for (VilainService vil : getVilains()){
 			Commande com = vil.getCommande();
 			int xvilain = vil.getX();
@@ -315,12 +331,14 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 				}
 				break;		
 			}
+			//Personnage meurt s'il croise un vilain
+			for (PersonnageJouableService perso : getListeJoueurs()){
+				if ((vil.getX() == coordperso[0] && vil.getY() == coordperso[1] && perso.getX() == xvilain && perso.getY() == yvilain) || (vil.getX() == perso.getX() && vil.getY() == perso.getY())){
+					perso.setSante(Sante.MORT);
+				}
+			}
 		}
-		switch (powerup){
-		case BOMBUP:
-			perso.addBombe();
-			break;
-		}
+		
 		}else{
 		resultatFinal();
 		System.out.println("Fin de la partie");
@@ -341,18 +359,6 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	public Sante getKidnappeurSante() {
 		return kidnappeur.getSante();
 	}
-
-	@Override
-	public int getHerosForceVitale() {
-		return heros.getForceVitale();
-		}
-	
-
-	@Override
-	public int getKidnappeurForceVitale() {
-		return kidnappeur.getForceVitale();
-		}
-	
 
 	@Override
 	public boolean bombeExiste(int num) {
@@ -414,7 +420,6 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 
 	@Override
 	public boolean misEnJoue(int x, int y, int num) {
-		//A ameliorer
 		int xB = getBombe(num).getX();
 		int yB = getBombe(num).getY();
 		int aB = getBombe(num).getAmplitude();
@@ -473,28 +478,19 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 
 	@Override
 	public ArrayList<PersonnageJouableService> getListeJoueurs() {
-		// TODO Auto-generated method stub
-		return null;
+		return persos;
 	}
 
 	@Override
 	public HashMap<Integer[], BombeService> getHashBombes() {
-		// TODO Auto-generated method stub
-		return null;
+		return hashbombes;
 	}
 	public void addHashBombes(Integer[] coords,BombeService bombe){
 		hashbombes.put(coords, bombe);
 	}
 
 	@Override
-	public ArrayList<BombeService> getBombesImminentes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ArrayList<VilainService> getVilains() {
-		// TODO Auto-generated method stub
-		return null;
+		return vilains;
 	}
 	}
