@@ -1,6 +1,10 @@
 package Tests;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import Services.BlocType;
+import Services.BombeService;
 import Services.Commande;
 import Services.MoteurJeuService;
 import Services.PersonnageJouableService;
@@ -18,6 +22,9 @@ public class MoteurJeuTestAbstract {
 	
 	private MoteurJeuService moteur;
 	private MoteurJeuService clone;
+	private ArrayList<BombeService> imminentes = new ArrayList();
+	private ArrayList<BombeService> tranquilles = new ArrayList();;
+	HashMap<VilainService, Integer[]> oldCoordsVilains = new HashMap<VilainService, Integer[]>();
 	public void setMoteurJeu(MoteurJeuService moteurJeu){
 		this.moteur = moteurJeu;
 	}
@@ -50,8 +57,23 @@ public class MoteurJeuTestAbstract {
 		}
 		moteur.getHeros().setCommande();
 		moteur.getKidnappeur().setCommande();
+
+		//Initialisation des listes de bombes
+				for (BombeService bombe : moteur.getBombes()){
+					if (bombe.vaExploser()){
+						imminentes.add(bombe);
+					}else{
+						tranquilles.add(bombe);
+					}
+				}
+				//Anciennes coordonnées des Vilains
+				for(VilainService vil : moteur.getVilains()){
+					Integer[] coor = {vil.getX(),vil.getY()};
+					oldCoordsVilains.put(vil, coor);
+				}
 		clone = moteur.clone();
 		moteur.pasJeu();
+		
 		assertTrue("PasJeu non incrémenté", clone.getPasJeuCourant() == moteur.getPasJeuCourant() -1);
 		for (PersonnageJouableService perso : moteur.getListeJoueurs()){
 			PersonnageJouableService persoclone;
@@ -106,8 +128,82 @@ public class MoteurJeuTestAbstract {
 		if (clone.getTerrain().getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.FIREUP && persoclone.getForceVitale() == 11){
 			assertTrue("FireUp appliqué alors que 11 = ForceVitale", 11 == perso.getForceVitale()); 
 		}
+		if (persoclone.getPowerUp() == PowerUpType.WALLPASS && clone.getTerrain().getBloc(persoclone.getX() + 1, persoclone.getY()).getType() == BlocType.MURBRIQUE && clone.getTerrain().getBloc(persoclone.getX() + 2, persoclone.getY()).getType() == BlocType.VIDE && perso.getCommande() == Commande.DROITE){
+			assertTrue("Wall pass non appliqué", perso.getX() == persoclone.getX() + 2);
+		}
+		if (persoclone.getPowerUp() == PowerUpType.WALLPASS && clone.getTerrain().getBloc(persoclone.getX() - 1, persoclone.getY()).getType() == BlocType.MURBRIQUE && clone.getTerrain().getBloc(persoclone.getX() - 2, persoclone.getY()).getType() == BlocType.VIDE && perso.getCommande() == Commande.GAUCHE){
+			assertTrue("Wall pass non appliqué", perso.getX() == persoclone.getX() - 2);
+		}
+		if (persoclone.getPowerUp() == PowerUpType.WALLPASS && clone.getTerrain().getBloc(persoclone.getX(), persoclone.getY() + 1).getType() == BlocType.MURBRIQUE && clone.getTerrain().getBloc(persoclone.getX(), persoclone.getY() +2).getType() == BlocType.VIDE && perso.getCommande() == Commande.BAS){
+			assertTrue("Wall pass non appliqué", perso.getY() == persoclone.getY() + 2);
+		}
+		if (persoclone.getPowerUp() == PowerUpType.WALLPASS && clone.getTerrain().getBloc(persoclone.getX(), persoclone.getY() -1).getType() == BlocType.MURBRIQUE && clone.getTerrain().getBloc(persoclone.getX(), persoclone.getY() -2).getType() == BlocType.VIDE && perso.getCommande() == Commande.HAUT){
+			assertTrue("Wall pass non appliqué", perso.getY() == persoclone.getY() - 2);
+		}
+		Integer[] coords= {perso.getX(),perso.getY()};
+		if (clone.getHashBombes().get(coords) != null){  
+			assertTrue("Sur une bombe sans BOMBPASS", persoclone.getPowerUp() == PowerUpType.BOMBPASS);
+		}
+		if (persoclone.getPowerUp() == PowerUpType.FIRESUIT && clone.getTerrain().getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.RIEN){
+			assertTrue("Compteur FireSuit non décrémenté", persoclone.getCompteurFireSuit() == persoclone.getCompteurFireSuit() - 1);
+		}
+		if (clone.getTerrain().getBloc(perso.getX(), perso.getY()).getPowerUpType() != PowerUpType.RIEN){
+			assertTrue("PowerUp non récupéré", persoclone.getPowerUp() == clone.getTerrain().getBloc(perso.getX(),perso.getY()).getPowerUpType());
+		}
+		if (persoclone.getCommande() == Commande.BOMBE){
+			assertTrue("Bombe non placé",moteur.getHashBombes().get(coords) != null);
+		}
+		if (persoclone.getCommande() == Commande.BOMBE){
+			assertTrue("Bombe a mauvaise amplitude",moteur.getHashBombes().get(coords).getAmplitude() != perso.getForceVitale());
+		}
+		if (persoclone.getCommande() == Commande.BOMBE){
+			assertTrue("Bombe a mauvaise amplitude",moteur.getHashBombes().get(coords).getAmplitude() != perso.getForceVitale());
+		}if (persoclone.getCommande() == Commande.BOMBE){
+			assertTrue("Perso a bougé alors qu'il a posé une bombe",persoclone.getX() == perso.getX() && persoclone.getY() == perso.getY());
+		}
+		for (BombeService bombe : imminentes){
+			if (moteur.misEnJoue(persoclone.getX(), persoclone.getY(), bombe.getNumero()) && persoclone.getPowerUp() != PowerUpType.FIRESUIT){
+				assertTrue("Joueur non mort alors qu'il n'a pas FireSuit", perso.getSante() == Sante.MORT);
+			}
+			assertTrue("Bombe n'a pas disparu après pasdeJeu",!moteur.getBombes().contains(bombe));
+			for (int i = 1; i<moteur.getTerrain().getNombreColonnes() -2 ;i++){
+				for (int j = 1; j<moteur.getTerrain().getNombreLignes() - 2; j++){
+				if(moteur.misEnJoue(i, j, bombe.getNumero()) && clone.getTerrain().getBloc(i, j).getType()==BlocType.MURBRIQUE){
+					assertTrue("Bloc pas modifié après explosion bombe", moteur.getTerrain().getBloc(i, j).getType() == BlocType.VIDE);
+				}
+				if(moteur.misEnJoue(i, j, bombe.getNumero()) && clone.getTerrain().getBloc(i, j).getPowerUpType()!=PowerUpType.RIEN){
+					assertTrue("Bloc pas modifié après explosion bombe", moteur.getTerrain().getBloc(i, j).getPowerUpType() == PowerUpType.RIEN);
+				}
+				}
+			}	
+		}
+		PersonnageJouableService autreJoueur;
+		if (perso == moteur.getHeros()){
+			autreJoueur = moteur.getKidnappeur();
+		}else{
+			autreJoueur = moteur.getHeros();
+		}
+		if (perso.getCommande() == Commande.BOMBE && autreJoueur.getCommande() == Commande.BOMBE){
+			assertTrue("nombre de bombes mal incrémentés",moteur.getNbBombes() == tranquilles.size() + 2);
+		}
+		if (perso.getCommande() == Commande.BOMBE && autreJoueur.getCommande() != Commande.BOMBE){
+			assertTrue("nombre de bombes mal incrémentés",moteur.getNbBombes() == tranquilles.size() + 1);
+		}
+		for (VilainService vil : moteur.getVilains()){
+		if (moteur.getTerrain().getBloc(oldCoordsVilains.get(vil)[0] + 1, oldCoordsVilains.get(vil)[1]).getType() == BlocType.VIDE && vil.getCommande() == Commande.DROITE){
+			assertTrue("Vilain a mal bougé", vil.getX() == oldCoordsVilains.get(vil)[0] + 1);
+			}
+		if (moteur.getTerrain().getBloc(oldCoordsVilains.get(vil)[0] - 1, oldCoordsVilains.get(vil)[1]).getType() == BlocType.VIDE && vil.getCommande() == Commande.GAUCHE){
+			assertTrue("Vilain a mal bougé", vil.getX() == oldCoordsVilains.get(vil)[0] - 1);
+			}
+		if (moteur.getTerrain().getBloc(oldCoordsVilains.get(vil)[0], oldCoordsVilains.get(vil)[1] -1 ).getType() == BlocType.VIDE && vil.getCommande() == Commande.HAUT){
+			assertTrue("Vilain a mal bougé", vil.getX() == oldCoordsVilains.get(vil)[1] - 1);
+			}
+		if (moteur.getTerrain().getBloc(oldCoordsVilains.get(vil)[0] + 1, oldCoordsVilains.get(vil)[1] +1).getType() == BlocType.VIDE && vil.getCommande() == Commande.BAS){
+			assertTrue("Vilain a mal bougé", vil.getX() == oldCoordsVilains.get(vil)[1] + 1);
+			}
 		
-		
-	}
+		}
+		}
 	}
 }

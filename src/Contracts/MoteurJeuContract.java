@@ -316,23 +316,20 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 			}
 			
 			int[] coords = {perso.getX(),perso.getY()};
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX() - 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.DROITE && ancienx + 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0] +1, oldcoordpersos.get(perso.getType())[1]).getType() == BlocType.MURBRIQUE && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0] +1, oldcoordpersos.get(perso.getType())[1]).getType() == BlocType.VIDE &&  perso.getCommande() == Commande.DROITE && ancienx + 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX() + 1, perso.getY()).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.GAUCHE && ancienx - 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0]  -1, oldcoordpersos.get(perso.getType())[1]).getType() == BlocType.MURBRIQUE && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0] -1, oldcoordpersos.get(perso.getType())[1]).getType() == BlocType.MURBRIQUE &&  perso.getCommande() == Commande.GAUCHE && ancienx - 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX(), perso.getY() + 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.HAUT && ancieny - 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS  && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0], oldcoordpersos.get(perso.getType())[1] - 1).getType() == BlocType.MURBRIQUE && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0], oldcoordpersos.get(perso.getType())[1] - 1).getType() == BlocType.MURBRIQUE && ancieny - 2 != perso.getX() && perso.getCommande() == Commande.HAUT){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
-			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS && hashBombes.get(coords) == null && terrain.getBloc(perso.getX(), perso.getY() - 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.BAS && ancieny + 2 != perso.getX()){
+			if(oldPowerUppersos.get(perso.getType()) == PowerUpType.WALLPASS  && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0], oldcoordpersos.get(perso.getType())[1] + 1).getType() == BlocType.MURBRIQUE && terrain.getBloc(oldcoordpersos.get(perso.getType()) [0], oldcoordpersos.get(perso.getType())[1] + 1).getType() == BlocType.MURBRIQUE && perso.getCommande() == Commande.BAS && ancieny + 2 != perso.getX()){
 				throw new PostConditionError("PowerUp WALLPASS non appliqué");
 			}
 			if (hashBombes.get(coords) != null && perso.getPowerUp() != PowerUpType.BOMBPASS){
 				throw new PostConditionError("Sur une bombe sans BOMBPASS");
-			}
-			if(super.getTerrain().getBloc(perso.getX(), perso.getY()).getType() != BlocType.VIDE){
-				throw new PostConditionError("Personnage sur une case non vide");
 			}
 			if(aFireSuit.get(perso.getType()) == true && oldCompteurFireSuit.get(perso.getType()) -1  != perso.getCompteurFireSuit()){
 				throw new PostConditionError("Compteur Fire Suite non décrémenté");
@@ -345,16 +342,13 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 			if (perso.getCommande() == Commande.BOMBE && hashBombes.get(coords) == null){
 				throw new PostConditionError("Bombe non crée aux coordonnées du joueur");
 			}
-			if (perso.getCommande() == Commande.BOMBE && hashBombes.get(coords).getNumero() != super.getNbBombes() + 1){
-				throw new PostConditionError("Bombe crée n'a pas le bon numéro");
-			}
 			if (perso.getCommande() == Commande.BOMBE && hashBombes.get(coords).getAmplitude() != perso.getForceVitale()){
 				throw new PostConditionError("Bombe crée n'a pas la bonne amplitude");
 			}
 			if (perso.getCommande() == Commande.BOMBE && (ancienx != perso.getX() || ancieny != perso.getY())){
 				throw new PostConditionError("Joueur a crée une bombe mais s'est déplacé");
 			}
-			for (BombeService bombe : super.getBombes()){
+			for (BombeService bombe : imminentes){
 			if (super.misEnJoue(ancienx,ancieny,bombe.getNumero()) && aFireSuit.get(perso.getType()) != true && perso.getSante() != Sante.MORT){
 				throw new PostConditionError("Joueur non mort alors que la bombe a explosé");
 			
@@ -381,9 +375,6 @@ public class MoteurJeuContract extends MoteurJeuDecorator {
 				autreJoueur = super.getHeros();
 			}
 			
-			if(perso.getCommande() == Commande.BOMBE && autreJoueur.getCommande() != Commande.BOMBE && super.getNbBombes() != tranquilles.size() + 1){
-				throw new PostConditionError("Incohérence entre le nombre de bombes après en avoir posé une");
-			}
 			if(perso.getCommande() == Commande.BOMBE && autreJoueur.getCommande() == Commande.BOMBE && super.getNbBombes() != tranquilles.size() + 2){
 				throw new PostConditionError("Incohérence entre le nombre de bombes après que les deux joueurs en aient posé une");
 			}
