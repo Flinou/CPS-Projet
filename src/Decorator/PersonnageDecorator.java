@@ -51,10 +51,4 @@ public class PersonnageDecorator implements PersonnageService {
 	public void setY(int y) {
 		delegate.setY(y);
 	}
-
-	@Override
-	public void setCommande() {
-		delegate.setCommande();
-	}
-
 }

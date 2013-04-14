@@ -1,5 +1,4 @@
 package Services;
-import Implementation.TerrainImpl;
 
 /**
  * 
@@ -18,7 +17,7 @@ import Implementation.TerrainImpl;
  * 		sinon \ Bloc::getType(getBloc(T,i,j)) \ne Bloc::MURMETAL \) 
   */
 
-public interface TerrainService {
+public interface TerrainService extends Cloneable{
 	
 	
 	/**
@@ -72,6 +71,7 @@ public interface TerrainService {
 	 */
 	public void setBloc(BlocService b, int i, int j);
 	
-	public TerrainImpl clone(); 
+	
+	public TerrainService clone(); 
 	
 }

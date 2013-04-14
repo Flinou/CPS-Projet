@@ -57,10 +57,4 @@ public class PersonnageImpl implements PersonnageService {
 	public void setY(int y) {
 		this.y = y;
 	}
-
-	@Override
-	public void setCommande() {
-		 
-	}
-
 }

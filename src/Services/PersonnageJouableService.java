@@ -53,7 +53,7 @@ public interface PersonnageJouableService extends PersonnageService {
 	public PersonnageType getType();
 	
 	/**
-	 * Augmente de un le nombre de bombes portes par le heros
+	 * Définit le nombre de bombes portes par le heros
 	 * @pre \( num \ge 0 \) //On peut imaginer des malus empêchant de poser des bombes
 	 * @post getNbBombes(setBombe(P,num)) == num
 	 */

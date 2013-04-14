@@ -94,4 +94,5 @@ public class TerrainContract extends TerrainDecorator {
 			throw new PostConditionError("getBloc(setBloc(T,b,i,j),i,j)!=b");
 	}
 	
+	public TerrainService clone() {return null;}
 }

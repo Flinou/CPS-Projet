@@ -1,77 +1,75 @@
 package Implementation;
 
-import Services.Commande;
+
 import Services.PersonnageJouableService;
 import Services.PersonnageType;
 import Services.PowerUpType;
-import Services.Sante;
+
 
 public class PersonnageJouableImpl extends PersonnageImpl implements PersonnageJouableService {
 
 	@Override
 	public void init(int i, int j, PersonnageType v) {
-		// TODO Auto-generated method stub
-		
+		super.init(i, j);
+		this.type = v;
+		this.forcevitale = 3;
+		this.nbbomb = 1;
 	}
 
+	private int nbbomb;
+	private int forcevitale;
+	private PersonnageType type;
+	private int firesuit;
+	private PowerUpType powerup;
+	
 	@Override
 	public int getForceVitale() {
-		// TODO Auto-generated method stub
-		return 0;
+		return forcevitale;
 	}
 
 	@Override
 	public void setForceVitale(int f) {
-		// TODO Auto-generated method stub
-		
+		this.forcevitale = f;
 	}
 
 	@Override
 	public PersonnageType getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return type;
 	}
 
 	@Override
 	public void setBombe(int num) {
-		// TODO Auto-generated method stub
-		
+		nbbomb = num;
 	}
 
 	@Override
 	public void addBombe() {
-		// TODO Auto-generated method stub
-		
+		nbbomb++;
 	}
 
 	@Override
 	public int getNbBombes() {
-		// TODO Auto-generated method stub
-		return 0;
+		return nbbomb;
 	}
 
 	@Override
 	public PowerUpType getPowerUp() {
-		// TODO Auto-generated method stub
-		return null;
+		return powerup;
 	}
 
 	@Override
 	public int getCompteurFireSuit() {
-		// TODO Auto-generated method stub
-		return 0;
+		return firesuit;
 	}
 
 	@Override
 	public void setCompteurFireSuit(int c) {
-		// TODO Auto-generated method stub
-		
+		firesuit = c;
 	}
 
 	@Override
 	public void setPowerUp(PowerUpType pouvoir) {
-		// TODO Auto-generated method stub
-		
+		powerup = pouvoir;
 	}
 
 }
