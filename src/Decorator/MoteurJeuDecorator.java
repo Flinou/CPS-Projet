@@ -118,5 +118,8 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 	public ArrayList<VilainService> getVilains() {
 		return delegates.getVilains();
 	}
-
+	@Override
+	public MoteurJeuService clone(){
+		return delegates.clone();
+	}
 }

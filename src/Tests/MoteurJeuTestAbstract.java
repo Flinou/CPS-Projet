@@ -1,8 +1,11 @@
 package Tests;
 
 import Services.BlocType;
+import Services.Commande;
 import Services.MoteurJeuService;
 import Services.PersonnageJouableService;
+import Services.PersonnageType;
+import Services.PowerUpType;
 import Services.Sante;
 import Services.VilainService;
 import static org.junit.Assert.*;
@@ -45,10 +48,66 @@ public class MoteurJeuTestAbstract {
 		for (VilainService vil : moteur.getVilains()){
 			vil.setCommande();
 		}
-		clone = moteur.clone(); 
+		moteur.getHeros().setCommande();
+		moteur.getKidnappeur().setCommande();
+		clone = moteur.clone();
 		moteur.pasJeu();
+		assertTrue("PasJeu non incrémenté", clone.getPasJeuCourant() == moteur.getPasJeuCourant() -1);
+		for (PersonnageJouableService perso : moteur.getListeJoueurs()){
+			PersonnageJouableService persoclone;
+			if (perso.getType() == PersonnageType.HEROS){
+				persoclone = clone.getHeros(); 
+			}else{
+				persoclone = clone.getKidnappeur();
+			}
+		assertTrue("Personnage sur une case non vide", moteur.getTerrain().getBloc(perso.getX(),perso.getY()).getType() == BlocType.VIDE);
+		if (moteur.getTerrain().getBloc(persoclone.getX() + 1, persoclone.getY()).getType() == BlocType.VIDE && perso.getCommande() == Commande.DROITE){
+		assertTrue("Personnage a bougé alors que la case n'était pas vide", perso.getX() == persoclone.getX() + 1);
+		}
+		if (moteur.getTerrain().getBloc(persoclone.getX() - 1, persoclone.getY()).getType() == BlocType.VIDE && perso.getCommande() == Commande.GAUCHE){
+			assertTrue("Personnage a bougé alors que la case n'était pas vide", perso.getX() == persoclone.getX() - 1);
+		}
+		if (moteur.getTerrain().getBloc(persoclone.getX(), persoclone.getY() - 1).getType() == BlocType.VIDE && perso.getCommande() == Commande.HAUT){
+			assertTrue("Personnage a bougé alors que la case n'était pas vide", perso.getY() == persoclone.getY() - 1);
+		}
+		if (moteur.getTerrain().getBloc(persoclone.getX(), persoclone.getY() + 1).getType() == BlocType.VIDE && perso.getCommande() == Commande.BAS){
+			assertTrue("Personnage a bougé alors que la case n'était pas vide", perso.getY() == persoclone.getY() + 1);
+		}
+		if (perso.getCommande() == Commande.DROITE && (moteur.getTerrain().getBloc(persoclone.getX() + 1, persoclone.getY()).getType() == BlocType.VIDE)){
+			assertTrue("Personnage n'a pas bien bougé", perso.getX() == Math.min(moteur.getTerrain().getNombreColonnes(), persoclone.getX() + 1));
+		}
+		if (perso.getCommande() == Commande.GAUCHE && (moteur.getTerrain().getBloc(persoclone.getX() - 1, persoclone.getY()).getType() == BlocType.VIDE)){
+			assertTrue("Personnage n'a pas bien bougé", perso.getX() == Math.max(1, persoclone.getX() - 1));
+		}
+		if (perso.getCommande() == Commande.HAUT && (moteur.getTerrain().getBloc(persoclone.getX(), persoclone.getY() - 1).getType() == BlocType.VIDE)){
+			assertTrue("Personnage n'a pas bien bougé", perso.getY() == Math.max(1, persoclone.getY() - 1));
+		}
+		if (perso.getCommande() == Commande.BAS && (moteur.getTerrain().getBloc(persoclone.getX(), persoclone.getY() + 1).getType() == BlocType.VIDE)){
+			assertTrue("Personnage n'a pas bien bougé", perso.getY() == Math.min(moteur.getTerrain().getNombreLignes(), persoclone.getY() + 1));
+		}
+		if (perso.getCommande() == Commande.BAS){
+			assertTrue("Incohérence ordonnée personnage", perso.getX() == persoclone.getX());
+		}
+		if (perso.getCommande() == Commande.HAUT){
+			assertTrue("Incohérence ordonnée personnage", perso.getX() == persoclone.getX());
+		}
+		if (perso.getCommande() == Commande.DROITE){
+			assertTrue("Incohérence ordonnée personnage", perso.getY() == persoclone.getY());
+		}
+		if (perso.getCommande() == Commande.GAUCHE){
+			assertTrue("Incohérence ordonnée personnage", perso.getY() == persoclone.getY());
+		}
+		if (clone.getTerrain().getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.BOMBUP){
+			assertTrue("BombUp non récupéré", persoclone.getNbBombes() + 1== perso.getNbBombes()); 
+		}
+		if (clone.getTerrain().getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.FIREUP && persoclone.getForceVitale() != 11){
+			assertTrue("FireUp non récupéré", persoclone.getForceVitale() + 2== perso.getForceVitale()); 
+		}
+		if (clone.getTerrain().getBloc(perso.getX(), perso.getY()).getPowerUpType() == PowerUpType.FIREUP && persoclone.getForceVitale() == 11){
+			assertTrue("FireUp appliqué alors que 11 = ForceVitale", 11 == perso.getForceVitale()); 
+		}
 		
 		
 	}
-
+	}
 }
