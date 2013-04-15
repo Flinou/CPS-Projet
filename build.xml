@@ -30,6 +30,7 @@
 	<target name="clean">
 		<delete dir="bin" />
 		<delete dir="doc" />
+		<delete dir="junit" />
 	</target>
 	<target depends="clean" name="cleanall" />
 	<target depends="build-subprojects,build-project" name="build" />
@@ -60,7 +61,7 @@
 		<junit fork="yes" printsummary="withOutAndErr">
 			<formatter type="xml" />
 			<test name="Tests.BlocImplTest" todir="${junit.output.dir}" />
-			<test name="Tests.MoteurJeuTestAbstract" todir="${junit.output.dir}" />
+			<test name="Tests.MoteurJeuImplTest" todir="${junit.output.dir}" />
 			<test name="Tests.PersonnageImplTest" todir="${junit.output.dir}" />
 			<test name="Tests.PersonnageJouableImplTest" todir="${junit.output.dir}" />
 			<test name="Tests.TerrainImplTest" todir="${junit.output.dir}" />
@@ -84,7 +85,7 @@
 			<classpath refid="CPS-Projet.classpath" />
 		</junit>
 	</target>
-	<target name="junitreport">
+	<target depends="CPS-Projet" name="junitreport">
 		<junitreport todir="${junit.output.dir}">
 			<fileset dir="${junit.output.dir}">
 				<include name="TEST-*.xml" />
