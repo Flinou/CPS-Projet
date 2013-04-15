@@ -12,7 +12,9 @@ import Services.Sante;
 import Services.TerrainService;
 import Services.VilainService;
 
+
 public class MoteurJeuDecorator implements MoteurJeuService {
+	
 	
 	public MoteurJeuDecorator(MoteurJeuService delegate){
 		this.delegates = delegate;
@@ -119,7 +121,12 @@ public class MoteurJeuDecorator implements MoteurJeuService {
 		return delegates.getVilains();
 	}
 	@Override
-	public MoteurJeuService clone(){
-		return delegates.clone();
+	public Commande getHerosCommande() {
+		return delegates.getHerosCommande();
+	}
+
+	@Override
+	public Commande getKidnappeurCommande() {
+		return delegates.getKidnappeurCommande();
 	}
 }
