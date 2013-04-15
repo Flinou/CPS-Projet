@@ -94,5 +94,14 @@ public class TerrainContract extends TerrainDecorator {
 			throw new PostConditionError("getBloc(setBloc(T,b,i,j),i,j)!=b");
 	}
 	
-	public TerrainService clone() {return null;}
+	public TerrainService clone() {
+		TerrainService t = super.clone();
+		for(int i=0;i<super.getNombreColonnes();i++) {
+			for(int j=0; j<super.getNombreLignes(); j++) {
+				if(!(t.getBloc(i, j)==super.getBloc(i, j)))
+					throw new PostConditionError("getNombresColonnes(clone(T)) != getNombresColonnes(T) * getNombresLignes(clone(T)) != getNombresLignes(T)");
+			}
+		}
+		return t;
+	}
 }

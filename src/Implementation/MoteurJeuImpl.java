@@ -66,22 +66,16 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		plateaujeu.init(15, 13);
 		pasJeuCourant = 0;
 		maxiPasJeu = maxPasJeu;
-		boolean hero = true;
-		for (PersonnageJouableService perso : persos){
-			if (hero) {
-				heros = perso;
-				heros.init(1, 1, PersonnageType.HEROS);
-				heros.setForceVitale(3);
-				heros.setBombe(1);
-				hero = false;
-			} else {
-				kidnappeur = perso;
-				kidnappeur.init(getTerrain().getNombreColonnes() - 2, getTerrain().getNombreColonnes() - 2, PersonnageType.MECHANT);
-				kidnappeur.setBombe(1);
-				kidnappeur.setForceVitale(3);
-				
-			}
-		}
+		heros.init(1, 1, PersonnageType.HEROS);
+		heros.setForceVitale(3);
+		heros.setBombe(1);
+		heros.setX(2);
+		heros.setY(2);
+		kidnappeur.init(getTerrain().getNombreColonnes() - 2, getTerrain().getNombreColonnes() - 2, PersonnageType.MECHANT);
+		kidnappeur.setBombe(1);
+		kidnappeur.setForceVitale(3);
+		kidnappeur.setX(10);
+		kidnappeur.setY(10);
 		// Initialisation des coordonnees des vilains
 		for (int j=0;j<4;j++){
 			VilainService vilain = new VilainImpl();
@@ -96,37 +90,6 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 				}
 			ballonOrange = !ballonOrange;
 		}
-		//Mise en place des murs metalliques 
-		int i = 0;
-		for (int j=0;j<plateaujeu.getNombreColonnes()-1;j++){
-			plateaujeu.getBloc(i, j).setType(BlocType.MURMETAL); 
-		}
-		int j=0;
-		for (i =0;i<plateaujeu.getNombreLignes()-1;i++){
-			plateaujeu.getBloc(i, j).setType(BlocType.MURMETAL);
-		}
-		j = plateaujeu.getNombreColonnes() -1;
-		for (i=0;i<plateaujeu.getNombreLignes()-1;i++){
-			plateaujeu.getBloc(i, j).setType(BlocType.MURMETAL);
-		}
-		i = plateaujeu.getNombreLignes() - 1;
-		for (j=0;j<plateaujeu.getNombreLignes()-1;j++){
-			plateaujeu.getBloc(i, j).setType(BlocType.MURMETAL);
-		}
-		for (i=1 ; i<plateaujeu.getNombreLignes() - 2; i++){
-			for (j=1;j<plateaujeu.getNombreColonnes()-2; j++){
-				if ( (i%2 == 1) && (j%2 == 1)){
-					plateaujeu.getBloc(i,j).setType(BlocType.MURMETAL);
-				}
-			}
-		}
-		for (i=1; i<plateaujeu.getNombreLignes() - 2;i++){
-			for (j=1;j<plateau.getNombreColonnes() -2;j++){
-				if (plateaujeu.getBloc(i, j).getType() != BlocType.MURMETAL){
-					plateaujeu.getBloc(i, j).setType(BlocType.VIDE);
-				}
-			}
-	}
 }
 	
 	

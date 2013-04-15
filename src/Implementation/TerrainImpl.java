@@ -1,7 +1,7 @@
 package Implementation;
 
 import Services.BlocService;
-
+import Services.BlocType;
 import Services.TerrainService;
 
 public class TerrainImpl implements TerrainService, Cloneable{
@@ -11,6 +11,18 @@ public class TerrainImpl implements TerrainService, Cloneable{
 		this.grille = new BlocService[l][h];
 		this.l=l;
 		this.h=h;
+		for(int i=0; i<l; i++)
+			for(int j=0; j<h; j++)
+				if(i==0 || i==l-1 || j==0 || j==h-1 || (i%2==1 && j%2==1)) {
+					BlocService t = new BlocImpl();
+					t.init(BlocType.MURMETAL);
+					grille[i][j] = t;
+				} else {
+					BlocService t = new BlocImpl();
+					t.init(BlocType.VIDE);
+					grille[i][j] = t;
+				}
+					
 	}
 	
 	private int l,h;

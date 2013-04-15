@@ -10,7 +10,7 @@ package Services;
  * @author Matthieu Dien
  *
  * @inv
- *		\[\forall i,j \ 0 \le i \lt l \ et \ 0 \le j \lt h, \\
+ *		\(\forall i,j \ 0 \le i \lt l \ et \ 0 \le j \lt h, \\
  * 		Bloc::getType(getBloc(T,i,h))=Bloc::MURMETAL, \\
  * 		Bloc::getType(getBloc(T,l,j))=Bloc::MURMETAL, \\
  * 		si \ i=j=1 \ [2] \ alors \ Bloc::getType(getBloc(T,i,j))=Bloc::MURMETAL \\
@@ -71,7 +71,17 @@ public interface TerrainService extends Cloneable{
 	 */
 	public void setBloc(BlocService b, int i, int j);
 	
-	
+	/**
+	 * Clone le terrain
+	 * @post
+	 * getNombresColonnes(clone(T)) == getNombresColonnes(T)
+	 * getNombresLignes(clone(T)) == getNombresLignes(T)
+	 * \( \forall i,j getBloc(T,i,j) = a \forall b \in BlocService \ et \ a \neq b , getBloc(setBloc(T,b,i,j)) \neq getBloc(clone(T),i,j)) \\
+	 * 		 getBloc(clone(T),i,j).getType() == getBloc(T,i,j).getType() \\
+	 * 		 getBloc(clone(T),i,j).getPowerUpType() == getBloc(T,i,j).getPowerUpType() \\
+	 * 		 &getBloc(clone(T),i,j) \neq &getBloc(T,i,j) \)
+	 * @return la copie du terrain
+	 */
 	public TerrainService clone(); 
 	
 }
