@@ -26,12 +26,12 @@ public interface MoteurJeuService {
 	public int getMaxPasJeu();
 	
 	/**
-	 * Retourne l'abscisse du heros.
+	 * Retourne le terrain
 	 */
 	public TerrainService getTerrain();
 	
 	/**
-	 * Retourne l'ordonnée du kidnappeur.
+	 * Retourne la santé du heros.
 	 */
 	
 	public Sante getHerosSante();
@@ -42,6 +42,17 @@ public interface MoteurJeuService {
 	 */
 	
 	public Sante getKidnappeurSante();
+	
+	/**
+	 * @return la commande du heros
+	 */
+	public Commande getHerosCommande();
+
+	/**
+	 * @return la commande du kidnappeur
+	 */
+	
+	public Commande getKidnappeurCommande();
 	
 	/**
 	 * Retourne le heros
@@ -286,8 +297,6 @@ public interface MoteurJeuService {
 	*<br /><br />  if vil::getCommande == Commande.HAUT && (BlocService::getBloc(old.vil::getX(),perso::old.getY()).getType==BlocType.MURBRIQUE) And vil::getType == Type.FANTOMEBLEU)=> vil::getY() = max (old.vil::getY(M) - 1,1)
 	*/
 	public void pasJeu();
-	
-	public MoteurJeuService clone(); 
 	
 	
 	

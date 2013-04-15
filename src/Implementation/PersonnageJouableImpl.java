@@ -6,7 +6,7 @@ import Services.PersonnageType;
 import Services.PowerUpType;
 
 
-public class PersonnageJouableImpl extends PersonnageImpl implements PersonnageJouableService {
+public class PersonnageJouableImpl extends PersonnageImpl implements PersonnageJouableService, Cloneable {
 
 	@Override
 	public void init(int i, int j, PersonnageType v) {
@@ -70,6 +70,17 @@ public class PersonnageJouableImpl extends PersonnageImpl implements PersonnageJ
 	@Override
 	public void setPowerUp(PowerUpType pouvoir) {
 		powerup = pouvoir;
+	}
+	
+	public PersonnageJouableImpl clone(){
+		PersonnageJouableImpl pers = new PersonnageJouableImpl();
+		try {
+			pers = (PersonnageJouableImpl) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return pers;
 	}
 
 }

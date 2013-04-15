@@ -40,10 +40,14 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 	private PersonnageJouableService kidnappeur = new PersonnageJouableImpl();
 	private int pasJeuCourant;
 	private int maxiPasJeu;
+	private Commande herosCommande;
+	private Commande kidnappeurCommande;
 	private TerrainService plateau = new TerrainImpl();
-	private TerrainService plateaujeu;
-	private ArrayList<BombeService> bombes;
-	private HashMap<Integer[],BombeService> hashbombes;
+	private TerrainService plateaujeu = new TerrainImpl();
+	private ArrayList<BombeService> bombes = new ArrayList();
+	private HashMap<Integer[],BombeService> hashbombes = new HashMap();
+	public Commande commande;
+	private HashMap <VilainService, Commande> HashVilComm = new HashMap();
 
 	@Override
 	public int getPasJeuCourant() {
@@ -61,8 +65,6 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		bindPersonnageJouableService(heros);
 		bindPersonnageJouableService(kidnappeur);
 		bindTerrainService(plateau);
-		persos.add(heros);
-		persos.add(kidnappeur);
 		plateaujeu.init(15, 13);
 		pasJeuCourant = 0;
 		maxiPasJeu = maxPasJeu;
@@ -71,7 +73,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		heros.setBombe(1);
 		heros.setX(2);
 		heros.setY(2);
-		kidnappeur.init(getTerrain().getNombreColonnes() - 2, getTerrain().getNombreColonnes() - 2, PersonnageType.MECHANT);
+		kidnappeur.init(10,10, PersonnageType.MECHANT);
 		kidnappeur.setBombe(1);
 		kidnappeur.setForceVitale(3);
 		kidnappeur.setX(10);
@@ -167,7 +169,14 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		
 		//Deplacement des personnages
 		for (PersonnageJouableService perso : getListeJoueurs()){
-			Commande comande = perso.getCommande();
+			Commande comande;
+			if (perso.getType() == PersonnageType.HEROS){
+				herosCommande = perso.getCommande();
+				comande = herosCommande;
+			} else{
+				kidnappeurCommande = perso.getCommande();
+				comande = kidnappeurCommande;
+			}
 			int xperso = perso.getX();
 			int yperso = perso.getY();
 			PowerUpType powerup = PowerUpType.RIEN;
@@ -269,6 +278,7 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 			//Deplacement des vilains
 			for (VilainService vil : getVilains()){
 			Commande com = vil.getCommande();
+			HashVilComm.put(vil, com);
 			int xvilain = vil.getX();
 			int yvilain = vil.getY();
 			switch (com){
@@ -281,9 +291,9 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 				break;
 			case GAUCHE : 
 				if ((vil.getType() == VilainType.BALLONORANGE) && (plateaujeu.getBloc(xvilain - 1, yvilain).getType() == BlocType.VIDE)){
-					vil.setX(xvilain + 1);
+					vil.setX(xvilain - 1);
 				} else if ((vil.getType() == VilainType.FANTOMEBLEU) && (plateaujeu.getBloc(xvilain - 1, yvilain).getType() != BlocType.MURMETAL)){
-					vil.setX(xvilain + 1);
+					vil.setX(xvilain - 1);
 				}
 				break;
 			case HAUT : 
@@ -308,6 +318,8 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 				}
 			}
 		}
+			pasJeuCourant ++;
+			
 		
 		}else{
 		resultatFinal();
@@ -464,14 +476,31 @@ public class MoteurJeuImpl implements MoteurJeuService, RequirePersonnageJouable
 		return vilains;
 	}
 	
-	public MoteurJeuService clone(){
-		MoteurJeuService clone = new MoteurJeuImpl();;
+	public MoteurJeuImpl clone(){
+		MoteurJeuImpl clone = new MoteurJeuImpl();;
 		try {
-		    clone = (MoteurJeuService) super.clone();
+		    clone = (MoteurJeuImpl) super.clone();
 		} catch (CloneNotSupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return clone;
 	}
+
+	@Override
+	public Commande getHerosCommande() {
+		return herosCommande;
 	}
+
+	@Override
+	public Commande getKidnappeurCommande() {
+		return kidnappeurCommande;
+	}
+	
+	public HashMap getVilainsCommande(){
+		return HashVilComm;
+	}
+	
+	
+	}
+
